@@ -1,17 +1,20 @@
-var gulp = 			require('gulp'),
-	gutil = 		require('gulp-util'),
-	sass = 			require('gulp-ruby-sass'),
-	jshint = 		require('gulp-jshint'),
-	compass = 		require('gulp-compass'),
-	uglify = 		require('gulp-uglifyjs'),
-	autoprefixer = 	require('gulp-autoprefixer'),
-	livereload = 	require('gulp-livereload'),
-	cssGlobbing = 	require('gulp-css-globbing'),
-	stylish = 		require('jshint-stylish'),
-	browserify = 	require('browserify'),
-	source = 		require('vinyl-source-stream'),
-	fs = 			require('fs'),
-	_ = 			require('lodash');
+var gulp = 			require('gulp');
+var	gutil = 		require('gulp-util');
+var	sass = 			require('gulp-ruby-sass');
+var	jshint = 		require('gulp-jshint');
+var	compass = 		require('gulp-compass');
+var	uglify = 		require('gulp-uglify');
+var	uglifyjs = 		require('gulp-uglifyjs');
+var	autoprefixer = 	require('gulp-autoprefixer');
+var	livereload = 	require('gulp-livereload');
+var	cssGlobbing = 	require('gulp-css-globbing');
+var	stylish = 		require('jshint-stylish');
+var	browserify = 	require('browserify');
+var	source = 		require('vinyl-source-stream');
+var	transform = 	require('vinyl-transform');
+var	fs = 			require('fs');
+var	_ = 			require('lodash');
+var sourcemaps = 	require('gulp-sourcemaps');
 
 
 // Settings
@@ -36,21 +39,23 @@ gulp.task('lint', function () {
 // Minify js files
 gulp.task('js', function () {
 	'use strict';
-	// gulp.src([settings.source + '/js/**/*.js'])
-	// 	.pipe(uglify('main.min.js', {
-	// 		outSourceMap: true,
-	// 	}))
-	// 	.on('error', gutil.log)
-	// 	.pipe(gulp.dest(settings.build + '/js'));
 
-	 return browserify(settings.source + '/js/app.js')
-	 	.on('error', gutil.log)
-        .bundle()
-        .on('error', gutil.log)
-        //Pass desired output filename to vinyl-source-stream
-        .pipe(source('main.js'))
-        // Start piping stream to tasks!
-        .on('error', gutil.log)
+	var browserified = transform(function(filename) {
+		var b = browserify(filename);
+		return b.bundle();
+	}); 
+
+	return gulp.src([
+			settings.source + '/app/**/*.js'
+		]) 
+		.pipe(browserified)
+//		  .pipe(sourcemaps.init())
+// 		  .pipe(uglify())
+//        .pipe(sourcemaps.write('./',{
+//       	 sourceRoot: '/src/app/',
+//       	 sourceMappingURLPrefix: '/_/js/',
+//       	 debug:true
+//        }))
 		.pipe(gulp.dest(settings.build + '/js'));
 });
 
@@ -87,7 +92,8 @@ gulp.task('default', ['build'], function() {
 	livereload.listen();
 
 	gulp.watch([settings.source + '/scss/**/*.scss'], 	['css']);
-	gulp.watch([settings.source + '/js/*.js'],			['lint','js']);
+	gulp.watch([settings.source + '/js/*.js',
+				settings.source + '/app/*.js'],			['lint','js']);
 	gulp.watch([settings.source + '/vendor/**/*.js'], 	['lint','vendor']);
 
 	gulp.watch([

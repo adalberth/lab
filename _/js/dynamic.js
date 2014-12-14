@@ -1,52 +1,22 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function(){
-	
 	/*
-	* Snake
+	* Dynamic Animation - Dette er en test
 	*/
-	// var createSnakeCollection = require('./snake_collection');
-	// var singleton = require('./singleton');
-
-	// $(document).ready(function(){
-	// 	singleton.init();
-
-	// 	var numberOfSnakes = window.innerWidth / 40;
-
-	// 	var snakeCollection = createSnakeCollection({
-	// 		numberOfSnakes: numberOfSnakes,
-	// 		delayBetweenSnakes:0
-	// 	});
-	// });	
-	
-
-	/*
-	* Curved Animation
-	*/
-	// var createCurvedAnimation = require('./curved_animation');
-	// var singleton = require('./singleton');
-
-	// $(document).ready(function(){
-	// 	singleton.init();
-
-	// 	var curvedAnimation = createCurvedAnimation();
-			
-	// });	
-
-	/*
-	* Dynamic Animation
-	*/
-	var createDynamicAnimation = require('./dynamic_animation');
-	var singleton = require('./singleton');
+	var createDynamicAnimation = require('./../js/dynamic_animation');
+	var singleton = require('./../js/singleton');
 
 	$(document).ready(function(){
 		singleton.init();
 
 		var dynamicAnimation = createDynamicAnimation();
 			
-	});
+	}); 
+
+	console.log("Hello form test.js");
 }())
 
-},{"./dynamic_animation":4,"./singleton":7}],2:[function(require,module,exports){
+},{"./../js/dynamic_animation":4,"./../js/singleton":7}],2:[function(require,module,exports){
 (function(){
 	
 	var singleton = require('./singleton');
@@ -1168,7 +1138,7 @@
 			this.tick = stupid.createSingleton(createTick);
 			this.canvas = stupid.createSingleton(createCanvas);
 		}
-	}; 
+	};  
 
 	module.exports = singleton;
 }())

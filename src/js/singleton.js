@@ -11,7 +11,7 @@
 			this.tick = stupid.createSingleton(createTick);
 			this.canvas = stupid.createSingleton(createCanvas);
 		}
-	}; 
+	};  
 
 	module.exports = singleton;
 }())

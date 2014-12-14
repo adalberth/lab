@@ -17,7 +17,7 @@
 	// 	});
 	// });	
 	
-
+ 
 	/*
 	* Curved Animation
 	*/

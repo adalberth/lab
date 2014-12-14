@@ -3,7 +3,7 @@
 	/*
 	* Dynamic Animation - Dette er en test
 	*/
-	var createDynamicAnimation = require('./../js/dynamic_animation');
+	var createDynamicAnimation = require('./../js/dynamic/dynamic_animation');
 	var singleton = require('./../js/singleton');
 
 	$(document).ready(function(){
@@ -16,7 +16,7 @@
 	console.log("Hello form test.js");
 }())
 
-},{"./../js/dynamic_animation":4,"./../js/singleton":7}],2:[function(require,module,exports){
+},{"./../js/dynamic/dynamic_animation":4,"./../js/singleton":7}],2:[function(require,module,exports){
 (function(){
 	
 	var singleton = require('./singleton');
@@ -113,11 +113,11 @@
 },{}],4:[function(require,module,exports){
 (function(){
 
-	var stupid = require('./stupid');
-	var singleton = require('./singleton');
-	var ease = require('./ease');
-	var Pvector = require('./pvector');
-	var createSnakePart = require('./snake_part');
+	var stupid = require('../stupid');
+	var singleton = require('../singleton');
+	var ease = require('../ease');
+	var Pvector = require('../pvector');
+	var createSnakePart = require('../snake/snake_part');
 
 	function createDynamicAnimation(){
 	 	that = {};
@@ -393,7 +393,7 @@
 	module.exports = createDynamicAnimation; 
 
 }())
-},{"./ease":5,"./pvector":6,"./singleton":7,"./snake_part":8,"./stupid":9}],5:[function(require,module,exports){
+},{"../ease":5,"../pvector":6,"../singleton":7,"../snake/snake_part":8,"../stupid":9}],5:[function(require,module,exports){
 /*
 *   http://gizma.com/easing/
 *   t: current time (time over periode time++)
@@ -1145,7 +1145,7 @@
 },{"./canvas":2,"./document":3,"./stupid":9,"./tick":10}],8:[function(require,module,exports){
 (function(){
 
-	var singleton = require('./singleton');
+	var singleton = require('../singleton');
 	/*
 	* Snake Part
 	*/
@@ -1197,7 +1197,7 @@
 
 	module.exports = createSnakePart; 
 }())
-},{"./singleton":7}],9:[function(require,module,exports){
+},{"../singleton":7}],9:[function(require,module,exports){
 (function(){
 
     var stupid = {};

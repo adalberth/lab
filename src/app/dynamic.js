@@ -2,7 +2,7 @@
 	/*
 	* Dynamic Animation - Dette er en test
 	*/
-	var createDynamicAnimation = require('./../js/dynamic_animation');
+	var createDynamicAnimation = require('./../js/dynamic/dynamic_animation');
 	var singleton = require('./../js/singleton');
 
 	$(document).ready(function(){

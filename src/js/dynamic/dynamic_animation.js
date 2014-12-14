@@ -1,10 +1,10 @@
 (function(){
 
-	var stupid = require('./stupid');
-	var singleton = require('./singleton');
-	var ease = require('./ease');
-	var Pvector = require('./pvector');
-	var createSnakePart = require('./snake_part');
+	var stupid = require('../stupid');
+	var singleton = require('../singleton');
+	var ease = require('../ease');
+	var Pvector = require('../pvector');
+	var createSnakePart = require('../snake/snake_part');
 
 	function createDynamicAnimation(){
 	 	that = {};

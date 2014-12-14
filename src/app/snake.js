@@ -2,7 +2,7 @@
 	/*
 	* Snake 
 	*/
-	var createSnakeCollection = require('../js/snake_collection');
+	var createSnakeCollection = require('../js/snake/snake_collection');
 	var singleton = require('../js/singleton');
 
 	$(document).ready(function(){

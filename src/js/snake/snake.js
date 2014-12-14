@@ -1,6 +1,6 @@
 (function($){
-		var singleton = require('./singleton');
-		var stupid = require('./stupid');
+		var singleton = require('../singleton');
+		var stupid = require('../stupid');
 		var createSnakePart = require('./snake_part');
 
 	    /*

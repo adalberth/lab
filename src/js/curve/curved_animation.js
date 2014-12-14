@@ -1,8 +1,8 @@
 (function(){
 
-	var stupid = require('./stupid');
-	var singleton = require('./singleton');
-	var ease = require('./ease');
+	var stupid = require('../stupid');
+	var singleton = require('../singleton');
+	var ease = require('../ease');
 
 	function createCurvedAnimation(){
 	 	that = {};

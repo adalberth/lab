@@ -1,11 +1,8 @@
 (function(){
-	/*
-	* TEST 2 !!
-	*/
 	/* 
 	* Curved Animation
 	*/
-	var createCurvedAnimation = require('../js/curved_animation');
+	var createCurvedAnimation = require('../js/curve/curved_animation');
 	var singleton = require('../js/singleton'); 
 
 	$(document).ready(function(){

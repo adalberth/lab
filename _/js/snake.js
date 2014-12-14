@@ -3,7 +3,7 @@
 	/*
 	* Snake 
 	*/
-	var createSnakeCollection = require('../js/snake_collection');
+	var createSnakeCollection = require('../js/snake/snake_collection');
 	var singleton = require('../js/singleton');
 
 	$(document).ready(function(){
@@ -17,7 +17,7 @@
 		});
 	});	
 }())
-},{"../js/singleton":4,"../js/snake_collection":6}],2:[function(require,module,exports){
+},{"../js/singleton":4,"../js/snake/snake_collection":6}],2:[function(require,module,exports){
 (function(){
 	
 	var singleton = require('./singleton');
@@ -131,8 +131,8 @@
 }())
 },{"./canvas":2,"./document":3,"./stupid":8,"./tick":9}],5:[function(require,module,exports){
 (function($){
-		var singleton = require('./singleton');
-		var stupid = require('./stupid');
+		var singleton = require('../singleton');
+		var stupid = require('../stupid');
 		var createSnakePart = require('./snake_part');
 
 	    /*
@@ -367,16 +367,16 @@
 
 }(jQuery))
 
-},{"./singleton":4,"./snake_part":7,"./stupid":8}],6:[function(require,module,exports){
+},{"../singleton":4,"../stupid":8,"./snake_part":7}],6:[function(require,module,exports){
 (function(){
 	/*
 	* Snake Collection
 	*/
 
 
-	var stupid = require('./stupid');  
+	var stupid = require('../stupid');  
+	var singleton = require('../singleton');  
 	var createSnake = require('./snake');  
-	var singleton = require('./singleton');  
 
 	function createSnakeCollection(opts){
 		var opts = $.extend(true,{
@@ -448,10 +448,10 @@
 
 	module.exports = createSnakeCollection; 
 }())
-},{"./singleton":4,"./snake":5,"./stupid":8}],7:[function(require,module,exports){
+},{"../singleton":4,"../stupid":8,"./snake":5}],7:[function(require,module,exports){
 (function(){
 
-	var singleton = require('./singleton');
+	var singleton = require('../singleton');
 	/*
 	* Snake Part
 	*/
@@ -503,7 +503,7 @@
 
 	module.exports = createSnakePart; 
 }())
-},{"./singleton":4}],8:[function(require,module,exports){
+},{"../singleton":4}],8:[function(require,module,exports){
 (function(){
 
     var stupid = {};

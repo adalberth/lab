@@ -1,6 +1,6 @@
 (function(){
 
-	var singleton = require('./singleton');
+	var singleton = require('../singleton');
 	/*
 	* Snake Part
 	*/

@@ -4,9 +4,9 @@
 	*/
 
 
-	var stupid = require('./stupid');  
+	var stupid = require('../stupid');  
+	var singleton = require('../singleton');  
 	var createSnake = require('./snake');  
-	var singleton = require('./singleton');  
 
 	function createSnakeCollection(opts){
 		var opts = $.extend(true,{

@@ -92,8 +92,10 @@ gulp.task('default', ['build'], function() {
 	livereload.listen();
 
 	gulp.watch([settings.source + '/scss/**/*.scss'], 	['css']);
-	gulp.watch([settings.source + '/js/*.js',
+	
+	gulp.watch([settings.source + '/js/**/*.js',
 				settings.source + '/app/*.js'],			['lint','js']);
+
 	gulp.watch([settings.source + '/vendor/**/*.js'], 	['lint','vendor']);
 
 	gulp.watch([

@@ -1,20 +1,200 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function(){
 	/*
-	* Dynamic Animation - Dette er en test
+	* Avoid 
 	*/
-	var createDynamicAnimation = require('./../js/dynamic/dynamic_animation');
-	var singleton = require('./../js/singleton');
+	var createCollection = require('../js/avoid/collection');
+	var singleton = require('../js/singleton');
 
 	$(document).ready(function(){
-		singleton.init();
+		singleton.init(); 
 
-		var dynamicAnimation = createDynamicAnimation();
-			
-	}); 
+		var elements = createCollection();
+	});	
 }())
+},{"../js/avoid/collection":2,"../js/singleton":7}],2:[function(require,module,exports){
+(function(){
 
-},{"./../js/dynamic/dynamic_animation":4,"./../js/singleton":7}],2:[function(require,module,exports){
+	var singleton = require('../singleton');
+	var stupid = require('../stupid');
+	var createElement = require('./element');
+
+	function createCollection(){
+	 	var self = {};
+	 	var numOfElements = 20;
+	 	var elements = [];
+	 	var loop = stupid.createCollectionLoop(elements);
+	 	var identify = { callback:render };
+
+	 	init();
+
+	 	function init(){
+	 		createElements();
+	 		singleton.tick.getInstance().add(identify);	
+	 	}
+
+	 	function render(){
+
+	 		singleton.canvas.getInstance().clear();
+
+	 		loop(outerLoop);
+
+	 		function outerLoop(el){
+	 			el.normal();
+	 			
+	 			loop(innerLoop);
+
+	 			function innerLoop(other){
+	 				if(el === other) return;
+	 				
+	 				var loc = el.getLocation();
+	 				var otherLoc = other.getLocation();
+
+	 				var dist = PVector.dist(loc, otherLoc);
+	 				dist -= el.getRadius() + other.getRadius();
+	 				dist = dist < 0 ? 0 : dist;
+
+	 				if(dist === 0){
+	 					//el.active();
+	 					var diff = PVector.sub(loc, otherLoc);
+	 					diff.normalize();
+	 					el.applyForce(diff);
+	 				}
+	 			}
+
+	 			el.render();
+	 		}
+
+	 		singleton.canvas.getInstance().update();
+
+	 	}
+
+
+	 	function createElements(){
+	 		for (var i = 0; i < numOfElements; i++) {
+	 			elements.push(createElement());			
+	 		};
+	 	}
+
+	 	return self;
+	} 
+
+	module.exports = createCollection;
+}())
+},{"../singleton":7,"../stupid":8,"./element":3}],3:[function(require,module,exports){
+(function(){
+	
+	var singleton = require('../singleton');
+	var PVector = require('../pvector');
+	var stupid = require('../stupid');
+
+	function createElement(){
+	 	var self = {};
+	 	var canvas = singleton.canvas.getInstance();
+	 	var ctx = canvas.getCtx();
+	 	var tick = singleton.tick.getInstance();
+
+	 	var radius = Math.random() * 10 + 20;
+
+	 	var color = "white";
+
+	 	var acc = getRandomAcceleration();
+	 	var vel = new PVector(0,0);
+	 	var loc = new PVector(window.innerWidth * Math.random(), 
+	 						  window.innerHeight * Math.random());
+
+	 	init();
+
+	 	function init(){
+	 		draw();
+	 	}
+
+	 	function getRandomAcceleration(){
+	 		return new PVector(stupid.random.negpos() * Math.random(),stupid.random.negpos() * Math.random());
+	 	}
+		function draw(){
+			ctx.save();
+				ctx.fillStyle = color;
+				ctx.beginPath();
+				ctx.arc(loc.x,loc.y,radius, 0 , 2*Math.PI);
+				ctx.fill();
+			ctx.restore();
+		}
+
+		function update(){
+	 		vel.mult(0.5);
+
+	 		vel.add(acc);
+		    loc.add(vel);
+
+	 		vel.limit(2);
+	 		acc.limit(5);
+	 		//acc.mult(0.25);
+	 		// if(singleton.tick.getInstance().getTick() % 25 === 0) acc = getRandomAcceleration();
+
+	 	}
+	 	
+	 	function applyForce(force){
+    		acc.add(force);
+	 	}
+
+		function bounderies(){
+			var width = window.innerWidth;
+			var height = window.innerHeight;
+
+			if(loc.x < radius * -1){
+				loc.x = width + radius;
+			}else if(loc.x > width + radius){
+				loc.x = radius * -1;
+			}
+
+			if(loc.y < radius * -1){
+				loc.y = height + radius;
+			}else if(loc.y > height + radius){
+				loc.y = radius * -1;
+			}
+		}
+
+
+		self.applyForce = applyForce;
+
+		self.render = function(){
+			update();
+			bounderies();
+			draw();
+		}
+
+		self.getLocation = function(){
+			return loc;
+		}
+
+		self.getVelocity = function(){
+			return vel;
+		}
+
+		self.getAcceleration = function() {
+			return acc;
+		};
+
+		self.getRadius = function() {
+			return radius;
+		};
+
+		self.active = function() {
+			color = "red";
+		};
+
+		self.normal = function() {
+			color = "white";
+		};
+
+	 	return self;
+	} 
+
+	module.exports = createElement;
+
+}())
+},{"../pvector":6,"../singleton":7,"../stupid":8}],4:[function(require,module,exports){
 (function(){
 	
 	var singleton = require('./singleton');
@@ -76,7 +256,7 @@
 	module.exports = createCanvas;
 
 }())
-},{"./singleton":7}],3:[function(require,module,exports){
+},{"./singleton":7}],5:[function(require,module,exports){
 (function(){
 
 	/*
@@ -107,528 +287,6 @@
 
     module.exports = createDocument; 
 
-}())
-},{}],4:[function(require,module,exports){
-(function(){
-
-	var stupid = require('../stupid');
-	var singleton = require('../singleton');
-	var ease = require('../ease');
-	var Pvector = require('../pvector');
-	var createSnakePart = require('../snake/snake_part');
-
-	function createDynamicAnimation(){
-	 	that = {};
-	 	
-	 	var snake = [];
-		var snakePosition = [];
-		var loop = stupid.createCollectionLoop(snake);
-		var step = 5;
-
-	 	var identify = {callback:_render};
-	 	var canvas = singleton.canvas.getInstance();
-	 	var ctx = singleton.canvas.getInstance().getCtx();
-	 	
-	 	var w = 20, h = 20;
-
-	 	var acc = new PVector(0,0);
-	 	var vel = new PVector(0,0);
-	 	var loc = new Pvector(100,100);
-
-	 	var tick = singleton.tick.getInstance();
-
-	 	var draftForce;
-
-
-
-
-
-	 	/*
-	 	* Keypress
-	 	*/
-	 	var keyPressed = [];
-	 	var resetKeys = 0;
-
- 		singleton.document.getInstance().getDocument().keypress(function(e) {
-
-		    var key = e.which;
-
-		    if(keyPressed.indexOf(key) === -1) keyPressed.push(key); 
-
-		    for (var i = 0; i < keyPressed.length; i++) {
-		    	var pressedKey = keyPressed[i];
-			    if(pressedKey === 119) keyPressedForce('up');
-			    if(pressedKey === 100) keyPressedForce('right');
-			    if(pressedKey === 115) keyPressedForce('down');
-			    if(pressedKey === 97) keyPressedForce('left');
-		    };
-
-		    clearTimeout(resetKeys);
-		    resetKeys = setTimeout(resetKeysTimeout,300);
-
-		});
-
-		function resetKeysTimeout(){
-			keyPressed = []
-		}
-
-		function keyPressedForce(direction){
-			console.log(direction);
-			if(direction === "up"){
-				_applyForce(PVector.fromAngle(stupid.math.toRad(270)));
-			}
-
-			if(direction === "right"){
-				_applyForce(PVector.fromAngle(stupid.math.toRad(0)));
-			}
-
-			if(direction === "down"){
-				_applyForce(PVector.fromAngle(stupid.math.toRad(90)));
-			}
-
-			if(direction === "left"){	
-				_applyForce(PVector.fromAngle(stupid.math.toRad(180)));
-			}
-
-			loc.add(_snakeMovementForce());
-		}
-
-	 	/*
-		* Public
-		*/
-
-		that.color = "red"; //stupid.random.rgbColorObject();
-		that.dim = w;
-		that.getPosition = function(){
-			return {
-				x: loc.x,
-				y: loc.y
-			}
-		};
-
-	 	_init();
-
-	 	function _init(){
-	 		_buildBody(10);
-	 		_draw();
-	 		canvas.update();
-	 		tick.add(identify);
-	 	}
-
-	 	function _buildBody(length){
-			for (var i = 0; i < length; i++) {
-				_addNewElementToSnake();
-			};
-		}
-
-		function _addNewElementToSnake(){
-			var el = createSnakePart(that);
-			snake.push(el);
-			var lastPosition = snakePosition[snakePosition.length - 1] || el;
-			snakePosition.push({
-				x: lastPosition.x,
-				y: lastPosition.y
-			});
-		}
-
-		function _udpatePositionHistory(){
-			snakePosition.unshift({x:loc.x,y:loc.y});
-			if(snakePosition.length > snake.length) snakePosition.pop();
-		}
-
-		function _displayPosition(){
-			function loopFunction(el,i){
-				el.setPosition(snakePosition[i].x,snakePosition[i].y);
-			}
-			loop(loopFunction);
-		}
-
-		function _getDirection(){
-			var diRad = Math.atan2(vel.y, vel.x);
-			var diDeg = stupid.math.toDeg(diRad);
-
-			return {
-				rad: diRad,
-				deg: parseInt( diDeg < 0 ? 360 + diDeg : diDeg)
-			}
-		}
-
-		function _snakeMovement(amplitude, frequency){
-			var rad = _getDirection().rad;
-
-			// Snake/Fish movement from side to side
-			var beta = rad + Math.PI / 2.0 ;
-			var amplitude = amplitude || 2;
-			var frequency = frequency || 0.2;
-			var currentDistance = amplitude * Math.sin(frequency * tick.getTick());
-			var snakeMoveX = Math.cos(beta) * currentDistance;
-			var snakeMoveY = Math.sin(beta) * currentDistance;
-
-			return {
-				x: snakeMoveX,
-				y: snakeMoveY
-			}
-
-		}
-
-		function _snakeMovementForce(amplitude, frequency){
-			var speed = vel.mag();
-			var amplitude = amplitude || speed / 1.5; 
-			var frequency = frequency || speed / 20;
-
-			var snakeMovementPos = _snakeMovement(amplitude, frequency);
-			var vector = new PVector(snakeMovementPos.x,snakeMovementPos.y);
-			return vector;
-		}
-
-		function _headDirection(){
-
-			var radius = 50;
-
-			var rad = _getDirection().rad;
-			var deg = _getDirection().deg;
-
-			// Location at end of line
-			var _x = radius * Math.sin(deg) + loc.x;
-			var _y = radius * Math.cos(deg) + loc.y;
-
-			ctx.save();
-				ctx.translate(loc.x, loc.y);
-				ctx.rotate(rad);
-				ctx.lineWidth = 5;
-				ctx.beginPath();
-				ctx.moveTo(0,0);
-				ctx.lineTo(radius,0);
-				ctx.strokeStyle = 'blue';
-				ctx.stroke(); 
-			ctx.restore();
-
-		}
-
-		function _position(){
-			_positionBounderies();
-			_udpatePositionHistory();
-			_displayPosition();
-		}
-
-	 	function _update(){
-	 		vel.mult(0.98);
-
-	 		vel.add(acc);
-		    loc.add(vel);
-
-	 		vel.limit(15);
-		    acc.mult(0);
-	 	}
-
-	 	function _applyForce(force){
-    		acc.add(force);
-	 	}
-
-	 	function _draw(){
-	 		ctx.fillStyle = that.color;
-	 		ctx.fillRect(loc.x,loc.y,w,h);
-	 	}
-
-	 	function _randomForce(){
-	 		var rx = stupid.random.negpos() * ( Math.random() * 2);
-	 		var ry = stupid.random.negpos() * ( Math.random() * 2);
-	 		return new PVector(rx,ry);
-	 	}
-
-	 	function _positionBounderies(){
-			var width = window.innerWidth;
-			var height = window.innerHeight;
-
-			if(loc.x < 0){
-				loc.x = width;
-			}else if(loc.x > width){
-				loc.x = 0;
-			}
-
-			if(loc.y < 0){
-				loc.y = height;
-			}else if(loc.y > height){
-				loc.y = 0;
-			}
-		}
-	 	
-	 	function _forces(){
-	 		var time = tick.getTick() % 150;
-
-	 		if(time === 1){
-	 			var ran = stupid.random.negpos() * 0.1;
-	 			draftForce = Math.random() < 0.5 ? new PVector(ran,0) : new PVector(0,ran);
-	 		}
-
-	 		if(time > 125){
-	 			_applyForce(_randomForce());
-	 		}
-
-	 		if(time < 75){
-		 		_applyForce(_snakeMovementForce());
-	 		}else{
-	 			_applyForce(draftForce);
-	 		}
-	 	}
-
-	 	function _render(){
-	 		canvas.clear();
-
-	 		_forces(); 
-	 		_update();
-	 		_position();
-	 		_draw();
-
-	 		canvas.update();
-	 	}
-
-	 	return that;
-	 }
-
-
-
-	module.exports = createDynamicAnimation; 
-
-}())
-},{"../ease":5,"../pvector":6,"../singleton":7,"../snake/snake_part":8,"../stupid":9}],5:[function(require,module,exports){
-/*
-*   http://gizma.com/easing/
-*   t: current time (time over periode time++)
-*   b: start value
-*   c: change in value (end value)
-*   d: duration 
-*/
-
-
-(function() {
-
-    var Ease = {};
-    window.Ease = Ease;
-
-    // simple linear tweening - no easing, no acceleration
-
-
-    Ease.linearTween = function(t, b, c, d) {
-        return c * t / d + b;
-    };
-
-
-    // quadratic easing in - accelerating from zero velocity
-
-
-    Ease.easeInQuad = function(t, b, c, d) {
-        t /= d;
-        return c * t * t + b;
-    };
-
-
-    // quadratic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutQuad = function(t, b, c, d) {
-        t /= d;
-        return -c * t * (t - 2) + b;
-    };
-
-
-
-    // quadratic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutQuad = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t + b;
-        t--;
-        return -c / 2 * (t * (t - 2) - 1) + b;
-    };
-
-
-    // cubic easing in - accelerating from zero velocity
-
-
-    Ease.easeInCubic = function(t, b, c, d) {
-        t /= d;
-        return c * t * t * t + b;
-    };
-
-
-
-    // cubic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutCubic = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return c * (t * t * t + 1) + b;
-    };
-
-
-
-    // cubic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutCubic = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t * t + b;
-        t -= 2;
-        return c / 2 * (t * t * t + 2) + b;
-    };
-
-
-    // quartic easing in - accelerating from zero velocity
-
-
-    Ease.easeInQuart = function(t, b, c, d) {
-        t /= d;
-        return c * t * t * t * t + b;
-    };
-
-
-
-    // quartic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutQuart = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return -c * (t * t * t * t - 1) + b;
-    };
-
-
-
-    // quartic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutQuart = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t * t * t + b;
-        t -= 2;
-        return -c / 2 * (t * t * t * t - 2) + b;
-    };
-
-
-    // quintic easing in - accelerating from zero velocity
-
-
-    Ease.easeInQuint = function(t, b, c, d) {
-        t /= d;
-        return c * t * t * t * t * t + b;
-    };
-
-
-
-    // quintic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutQuint = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return c * (t * t * t * t * t + 1) + b;
-    };
-
-
-
-    // quintic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutQuint = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t * t * t * t + b;
-        t -= 2;
-        return c / 2 * (t * t * t * t * t + 2) + b;
-    };
-
-
-    // sinusoidal easing in - accelerating from zero velocity
-
-
-    Ease.easeInSine = function(t, b, c, d) {
-        return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
-    };
-
-
-
-    // sinusoidal easing out - decelerating to zero velocity
-
-
-    Ease.easeOutSine = function(t, b, c, d) {
-        return c * Math.sin(t / d * (Math.PI / 2)) + b;
-    };
-
-
-
-    // sinusoidal easing in/out - accelerating until halfway, then decelerating
-
-
-    Ease.easeInOutSine = function(t, b, c, d) {
-        return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
-    };
-
-
-
-    // exponential easing in - accelerating from zero velocity
-
-
-    Ease.easeInExpo = function(t, b, c, d) {
-        return c * Math.pow(2, 10 * (t / d - 1)) + b;
-    };
-
-
-
-    // exponential easing out - decelerating to zero velocity
-
-
-    Ease.easeOutExpo = function(t, b, c, d) {
-        return c * (-Math.pow(2, -10 * t / d) + 1) + b;
-    };
-
-
-
-    // exponential easing in/out - accelerating until halfway, then decelerating
-
-
-    Ease.easeInOutExpo = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
-        t--;
-        return c / 2 * (-Math.pow(2, -10 * t) + 2) + b;
-    };
-
-
-    // circular easing in - accelerating from zero velocity
-
-
-    Ease.easeInCirc = function(t, b, c, d) {
-        t /= d;
-        return -c * (Math.sqrt(1 - t * t) - 1) + b;
-    };
-
-
-
-    // circular easing out - decelerating to zero velocity
-
-
-    Ease.easeOutCirc = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return c * Math.sqrt(1 - t * t) + b;
-    };
-
-
-
-    // circular easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutCirc = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
-        t -= 2;
-        return c / 2 * (Math.sqrt(1 - t * t) + 1) + b;
-    };
-
-
-    module.exports = Ease;
 }())
 },{}],6:[function(require,module,exports){
 /**
@@ -1140,62 +798,7 @@
 
 	module.exports = singleton;
 }())
-},{"./canvas":2,"./document":3,"./stupid":9,"./tick":10}],8:[function(require,module,exports){
-(function(){
-
-	var singleton = require('../singleton');
-	/*
-	* Snake Part
-	*/
-
-	function createSnakePart(){
-	 	var that = {};
-	 	var parent = arguments[0];
-	 	var color = parent.color;
-	 	var opacity = 1;
-	 	var ctx = singleton.canvas.getInstance().getCtx();
-
-	 	var x = parent.getPosition().x;
-	 	var y = parent.getPosition().y; 
-	 	var width = parent.dim;
-	 	var height = parent.dim;
-
-		function _draw(){
-			ctx.save();
-			ctx.fillStyle = 'rgba('+color.r+','+color.g+','+color.b+','+opacity+')';
-			ctx.fillRect(x,y,width,height);
-			ctx.restore();
-		} 
-		/*
-		* Public
-		*/
-
-		that.getPosition = function() {
-
-			return {
-				x: x, 
-				y: y
-			}
-		};
-
-		that.setPosition = function(_x,_y) {
-			x = _x;
-			y = _y;
-			_draw();
-		};
-
-		that.setOpacity = function(value){
-			opacity = value;
-		}
-
-
-
-	 	return that;
-	}
-
-	module.exports = createSnakePart; 
-}())
-},{"../singleton":7}],9:[function(require,module,exports){
+},{"./canvas":4,"./document":5,"./stupid":8,"./tick":9}],8:[function(require,module,exports){
 (function(){
 
     var stupid = {};
@@ -1347,7 +950,7 @@
     module.exports = stupid;
 
 }())
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function(){
 
 	/*

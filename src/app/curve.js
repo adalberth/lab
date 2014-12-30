@@ -12,7 +12,5 @@
 			
 	}); 
 
-	console.log("Hello World");
-
 }())
   

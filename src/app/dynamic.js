@@ -11,6 +11,4 @@
 		var dynamicAnimation = createDynamicAnimation();
 			
 	}); 
-
-	console.log("Hello form test.js");
 }())

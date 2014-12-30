@@ -13,8 +13,6 @@
 			
 	}); 
 
-	console.log("Hello World");
-
 }())
   
 },{"../js/curve/curved_animation":3,"../js/singleton":6}],2:[function(require,module,exports){

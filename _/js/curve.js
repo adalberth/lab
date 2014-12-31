@@ -610,7 +610,7 @@
     stupid.random.rgbColor = function(){
         var rgb = stupid.random.rgbColorObject();
 
-        return "rgba("+rgb.r+","+rgb.g+","+rgb.g+",1);";
+        return "rgba("+rgb.r+","+rgb.g+","+rgb.b+",1);";
     }
 
 

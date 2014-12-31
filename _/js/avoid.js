@@ -21,10 +21,12 @@
 
 	function createCollection(){
 	 	var self = {};
-	 	var numOfElements = 20;
+	 	var numOfElements = 200;
 	 	var elements = [];
 	 	var loop = stupid.createCollectionLoop(elements);
 	 	var identify = { callback:render };
+	 	var canvas = singleton.canvas.getInstance();
+	 	var ctx = canvas.getCtx();
 
 	 	init();
 
@@ -35,12 +37,20 @@
 
 	 	function render(){
 
-	 		singleton.canvas.getInstance().clear();
+	 		// singleton.canvas.getInstance().clear();
+	 		ctx.fillStyle = 'rgba(0,0,0,0.05);';
+	 		ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
 
+	 		renderElemenets();
+
+	 		canvas.update();
+
+	 	}
+
+	 	function renderElemenets(){
 	 		loop(outerLoop);
 
 	 		function outerLoop(el){
-	 			el.normal();
 	 			
 	 			loop(innerLoop);
 
@@ -54,19 +64,16 @@
 	 				dist -= el.getRadius() + other.getRadius();
 	 				dist = dist < 0 ? 0 : dist;
 
-	 				if(dist === 0){
-	 					//el.active();
+	 				if(dist < 100){
 	 					var diff = PVector.sub(loc, otherLoc);
 	 					diff.normalize();
+	 					diff.div(dist);
 	 					el.applyForce(diff);
 	 				}
 	 			}
 
 	 			el.render();
 	 		}
-
-	 		singleton.canvas.getInstance().update();
-
 	 	}
 
 
@@ -94,14 +101,24 @@
 	 	var ctx = canvas.getCtx();
 	 	var tick = singleton.tick.getInstance();
 
-	 	var radius = Math.random() * 10 + 20;
+	 	var minRadius = 1;
+	 	var maxRadius = Math.random() * 2 + 1;
+	 	var radius = minRadius;
 
-	 	var color = "white";
+	 	var solidColor = stupid.random.rgbColor();
+	 	var transparentColor = 'rgba(0,0,0,0)';
+	 	var color = solidColor;
 
 	 	var acc = getRandomAcceleration();
 	 	var vel = new PVector(0,0);
-	 	var loc = new PVector(window.innerWidth * Math.random(), 
-	 						  window.innerHeight * Math.random());
+	 	var loc = new PVector(window.innerWidth * Math.random(), window.innerHeight * Math.random());
+
+	 	var offset = stupid.random.negpos() * Math.random() * 1000;
+	 	var limit = 2;
+
+	 	var grow = createGrow();
+	 	var rotate = createRotate();
+
 
 	 	init();
 
@@ -109,9 +126,11 @@
 	 		draw();
 	 	}
 
-	 	function getRandomAcceleration(){
-	 		return new PVector(stupid.random.negpos() * Math.random(),stupid.random.negpos() * Math.random());
+	 	function getRandomAcceleration(mag){
+	 		var mag = mag || 1;
+	 		return new PVector(stupid.random.negpos() * Math.random() * mag,stupid.random.negpos() * Math.random() * mag);
 	 	}
+
 		function draw(){
 			ctx.save();
 				ctx.fillStyle = color;
@@ -122,17 +141,12 @@
 		}
 
 		function update(){
-	 		vel.mult(0.5);
-
 	 		vel.add(acc);
 		    loc.add(vel);
-
-	 		vel.limit(2);
-	 		acc.limit(5);
-	 		//acc.mult(0.25);
-	 		// if(singleton.tick.getInstance().getTick() % 25 === 0) acc = getRandomAcceleration();
-
+	 		vel.limit(limit);
+	 		acc.mult(0);
 	 	}
+
 	 	
 	 	function applyForce(force){
     		acc.add(force);
@@ -155,12 +169,42 @@
 			}
 		}
 
+		function createGrow(){
+			var toggle = true;
+			var increase = 0.01;
+			return function() {
+				if(radius > maxRadius || radius < minRadius) toggle = !toggle;
+				if(toggle){
+					radius += increase;
+				}else{
+					radius -= increase;
+				}
+			};
+		}
+
+		function createRotate(){
+	 		var frequencyCos = Math.random() * 100 + 100;
+	 		var frequencySin = Math.random() * 100 + 100;
+
+	 		return function(){
+		 		var frame = tick.getTick() + offset;
+		 		var cos = Math.cos(frame / frequencyCos );
+		 		var sin = Math.sin(frame / frequencySin );
+		 		var rot = new PVector(cos,sin);
+		 		rot.normalize();
+		 		rot.div(100);
+		 		applyForce(rot);
+	 		}
+	 	}
+
 
 		self.applyForce = applyForce;
 
 		self.render = function(){
+			rotate();
 			update();
 			bounderies();
+			grow();
 			draw();
 		}
 
@@ -178,14 +222,6 @@
 
 		self.getRadius = function() {
 			return radius;
-		};
-
-		self.active = function() {
-			color = "red";
-		};
-
-		self.normal = function() {
-			color = "white";
 		};
 
 	 	return self;
@@ -911,7 +947,7 @@
     stupid.random.rgbColor = function(){
         var rgb = stupid.random.rgbColorObject();
 
-        return "rgba("+rgb.r+","+rgb.g+","+rgb.g+",1);";
+        return "rgba("+rgb.r+","+rgb.g+","+rgb.b+",1);";
     }
 
 

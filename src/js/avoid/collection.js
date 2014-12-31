@@ -6,10 +6,12 @@
 
 	function createCollection(){
 	 	var self = {};
-	 	var numOfElements = 20;
+	 	var numOfElements = 200;
 	 	var elements = [];
 	 	var loop = stupid.createCollectionLoop(elements);
 	 	var identify = { callback:render };
+	 	var canvas = singleton.canvas.getInstance();
+	 	var ctx = canvas.getCtx();
 
 	 	init();
 
@@ -20,12 +22,20 @@
 
 	 	function render(){
 
-	 		singleton.canvas.getInstance().clear();
+	 		// singleton.canvas.getInstance().clear();
+	 		ctx.fillStyle = 'rgba(0,0,0,0.05);';
+	 		ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
 
+	 		renderElemenets();
+
+	 		canvas.update();
+
+	 	}
+
+	 	function renderElemenets(){
 	 		loop(outerLoop);
 
 	 		function outerLoop(el){
-	 			el.normal();
 	 			
 	 			loop(innerLoop);
 
@@ -39,19 +49,16 @@
 	 				dist -= el.getRadius() + other.getRadius();
 	 				dist = dist < 0 ? 0 : dist;
 
-	 				if(dist === 0){
-	 					//el.active();
+	 				if(dist < 100){
 	 					var diff = PVector.sub(loc, otherLoc);
 	 					diff.normalize();
+	 					diff.div(dist);
 	 					el.applyForce(diff);
 	 				}
 	 			}
 
 	 			el.render();
 	 		}
-
-	 		singleton.canvas.getInstance().update();
-
 	 	}
 
 

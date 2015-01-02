@@ -7,7 +7,7 @@
 	function randomColor(){
 		
 		function random(){
-			var ran = stupid.random.negpos() * Math.random() * 15;
+			var ran = stupid.random.negpos() * Math.random() * 20;
 			return ran;
 		}
 
@@ -16,10 +16,11 @@
 		}
 
 		colors = [
-			{ r:224, g:221, b:152 },
-			{ r:150, g:148, b:102 },
-			{ r:233, g:231, b:183 },
+			// { r:224, g:221, b:152 },
+			// { r:150, g:148, b:102 },
+			// { r:233, g:231, b:183 },
 			{ r:22, g:79, b:112 },
+			{ r:255, g:255, b:255 },
 			// { r:10, g:35, b:35 }
 		];
 
@@ -29,32 +30,35 @@
 		var g = checkValue(color.g + random());
 		var b = checkValue(color.b + random());
 
-		return 'rgba('+r+','+g+','+b+',0.75);'
+		return 'rgba('+r+','+g+','+b+',1);'
 	}
 
 
-	function createElement(){
+	function createElement(size, color){
 	 	var self = {};
 	 	var canvas = singleton.canvas.getInstance();
 	 	var ctx = canvas.getCtx();
 	 	var tick = singleton.tick.getInstance();
 
 	 	
-	 	var color = randomColor();
+	 	var color = color || randomColor();
 
 	 	var dir = getRandomAcceleration(5);
 	 	var acc = dir;
 	 	var vel = new PVector(0,0);
 	 	var loc = new PVector(window.innerWidth * Math.random(), window.innerHeight * Math.random());
 
-	 	var minRadius = 10;
-	 	var maxRadius = 20;
+	 	var limit = 1; 
+
+	 	var size = size || 1;
+	 	var minRadius = 1 + size;
+	 	var maxRadius = 5 + size;
 	 	var radius = Math.random() * (maxRadius - minRadius) + minRadius;
 	 	var grow = createGrow(minRadius,maxRadius);
 	 	var rotate = createRotate();
 	 	var wings = createDrawWings();
 
-	 	var limit = 0.2; 
+	 	
 
 	 	init();
 
@@ -132,7 +136,7 @@
 		}
 		function createGrow(minRadius, maxRadius){
 			var toggle = true;
-			var increase = 0.05;
+			var increase = limit / 100;
 			return function() {
 				if(radius > maxRadius || radius < minRadius) toggle = !toggle;
 				if(toggle){

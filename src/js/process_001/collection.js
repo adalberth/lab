@@ -6,7 +6,7 @@
 
 	function createCollection(){
 	 	var self = {}; 
-	 	var numOfElements = 400;  
+	 	var numOfElements = window.innerWidth / 1.5;  
 	 	var elements = [];
 	 	var loop = stupid.createCollectionLoop(elements);
 	 	var identify = { callback:render };
@@ -37,7 +37,7 @@
 
 	 		function outerLoop(el){
 	 			
-	 			loop(innerLoop);
+	 			loop(innerLoop); 
 
 	 			function innerLoop(other){
 	 				if(el === other) return;
@@ -58,6 +58,7 @@
 	 				}else if(dist < 0){
 	 					var diff = PVector.sub(loc, otherLoc);
 	 					diff.normalize();
+	 					diff.mult(1);
 	 					el.applyForce(diff);
 	 				}
 	 			}

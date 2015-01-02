@@ -397,6 +397,8 @@ canvas {
   height: 100%;
   width: 100%;
   position: absolute;
+  -webkit-transform: translateZ(0px);
+          transform: translateZ(0px);
 }
 
 body {

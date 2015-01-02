@@ -49,13 +49,6 @@ gulp.task('js', function () {
 			settings.source + '/app/**/*.js'
 		]) 
 		.pipe(browserified)
-//		  .pipe(sourcemaps.init())
-// 		  .pipe(uglify())
-//        .pipe(sourcemaps.write('./',{
-//       	 sourceRoot: '/src/app/',
-//       	 sourceMappingURLPrefix: '/_/js/',
-//       	 debug:true
-//        }))
 		.pipe(gulp.dest(settings.build + '/js'));
 });
 

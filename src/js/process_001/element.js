@@ -7,7 +7,7 @@
 	function randomColor(){
 		
 		function random(){
-			var ran = stupid.random.negpos() * Math.random() * 5;
+			var ran = stupid.random.negpos() * Math.random() * 15;
 			return ran;
 		}
 
@@ -20,7 +20,7 @@
 			{ r:150, g:148, b:102 },
 			{ r:233, g:231, b:183 },
 			{ r:22, g:79, b:112 },
-			{ r:10, g:35, b:35 }
+			// { r:10, g:35, b:35 }
 		];
 
 
@@ -29,7 +29,7 @@
 		var g = checkValue(color.g + random());
 		var b = checkValue(color.b + random());
 
-		return 'rgba('+r+','+g+','+b+',0.05);'
+		return 'rgba('+r+','+g+','+b+',0.75);'
 	}
 
 
@@ -39,17 +39,22 @@
 	 	var ctx = canvas.getCtx();
 	 	var tick = singleton.tick.getInstance();
 
-	 	var radius = 20;
+	 	
 	 	var color = randomColor();
 
-	 	var acc = getRandomAcceleration();
+	 	var dir = getRandomAcceleration(5);
+	 	var acc = dir;
 	 	var vel = new PVector(0,0);
 	 	var loc = new PVector(window.innerWidth * Math.random(), window.innerHeight * Math.random());
 
-	 	var grow = createGrow(radius,60);
+	 	var minRadius = 10;
+	 	var maxRadius = 20;
+	 	var radius = Math.random() * (maxRadius - minRadius) + minRadius;
+	 	var grow = createGrow(minRadius,maxRadius);
 	 	var rotate = createRotate();
 	 	var wings = createDrawWings();
 
+	 	var limit = 0.2; 
 
 	 	init();
 
@@ -66,16 +71,22 @@
 			ctx.save();
 				ctx.fillStyle = color;
 				ctx.beginPath();
-				ctx.arc(loc.x,loc.y,1, 0 , 2*Math.PI);
+				ctx.arc(loc.x,loc.y, radius, 0, 2 * Math.PI);
 				ctx.fill();
 			ctx.restore();
 		}
 
 
 		function update(){
+			acc.limit(limit);
+
+			// applyForce(dir);
+
 	 		vel.add(acc);
-	 		vel.limit(0.5);
+	 		vel.limit(limit);
+
 		    loc.add(vel);
+
 	 		acc.mult(0);
 	 	}
 
@@ -121,7 +132,7 @@
 		}
 		function createGrow(minRadius, maxRadius){
 			var toggle = true;
-			var increase = 0.1;
+			var increase = 0.05;
 			return function() {
 				if(radius > maxRadius || radius < minRadius) toggle = !toggle;
 				if(toggle){
@@ -133,7 +144,7 @@
 		}
 
 		function createRotate(){
-			var mag = 1.1;
+			var mag = 1;
 			var frequency = 200;
 	 		var frequencyCos = Math.random() * frequency + frequency;
 	 		var frequencySin = Math.random() * frequency + frequency;
@@ -151,12 +162,12 @@
 	 	}
 
 	 	function render(){
-	 		//rotate();
 			update();
 			bounderies();
+	 		rotate();
 			grow();
-			wings();
-			//draw();
+			// wings();
+			draw();
 	 	}
 
 		self.applyForce = applyForce;

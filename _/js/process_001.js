@@ -3,280 +3,16 @@
 	/*
 	* Avoid 
 	*/
-	var createCollection = require('../js/avoid/collection');
+	var createCollection = require('../js/process_001/collection');
 	var singleton = require('../js/singleton');
 
 	$(document).ready(function(){
 		singleton.init(); 
 
 		var elements = createCollection();
-	});	
+	});	 
 }())
-},{"../js/avoid/collection":2,"../js/singleton":7}],2:[function(require,module,exports){
-(function(){
-
-	var singleton = require('../singleton');
-	var stupid = require('../stupid');
-	var createElement = require('./element');
-
-	function createCollection(){
-	 	var self = {};
-	 	var numOfElements = 200;
-	 	var elements = [];
-	 	var loop = stupid.createCollectionLoop(elements);
-	 	var identify = { callback:render };
-	 	var canvas = singleton.canvas.getInstance();
-	 	var ctx = canvas.getCtx();
-
-	 	init();
-
-	 	function init(){
-	 		createElements();
-	 		singleton.tick.getInstance().add(identify);	
-	 	}
-
-	 	function render(){
-
-	 		// singleton.canvas.getInstance().clear();
-	 		// ctx.fillStyle = 'rgba(0,0,0,0.05);';
-	 		// ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
-
-	 		renderElemenets();
-
-	 		canvas.update();
-
-	 	}
-
-	 	function renderElemenets(){
-	 		loop(outerLoop);
-
-	 		function outerLoop(el){
-	 			
-	 			//loop(innerLoop);
-
-	 			function innerLoop(other){
-	 				if(el === other) return;
-	 				
-	 				var loc = el.getLocation();
-	 				var otherLoc = other.getLocation();
-
-	 				var dist = PVector.dist(loc, otherLoc);
-	 				dist -= el.getRadius() + other.getRadius();
-	 				dist = dist < 0 ? 0 : parseInt(dist);
-
-	 				if(dist < 10){
-	 					var diff = PVector.sub(loc, otherLoc);
-	 					var divide = Math.pow(dist,1.25);
-	 					diff.normalize();
-	 					diff.div(divide);
-	 					el.applyForce(diff);
-	 				}
-	 			}
-
-	 			el.render();
-	 		}
-	 	}
-
-
-	 	function createElements(){
-	 		for (var i = 0; i < numOfElements; i++) {
-	 			elements.push(createElement());			
-	 		};
-	 	}
-
-	 	return self;
-	} 
-
-	module.exports = createCollection;
-}())
-},{"../singleton":7,"../stupid":8,"./element":3}],3:[function(require,module,exports){
-(function(){
-	
-	var singleton = require('../singleton');
-	var PVector = require('../pvector');
-	var stupid = require('../stupid');
-
-	function randomColor(){
-		
-		function random(){
-			var ran = stupid.random.negpos() * Math.random() * 5;
-			return ran;
-		}
-
-		function checkValue(x){
-			return parseInt(x < 0 ? 0 : x > 256 ? 256 : x);
-		}
-
-		colors = [
-			{ r:224, g:221, b:152 },
-			{ r:150, g:148, b:102 },
-			{ r:233, g:231, b:183 },
-			{ r:22, g:79, b:112 },
-			{ r:10, g:35, b:35 }
-		];
-
-
-		var color = colors[parseInt(Math.random() * colors.length)];
-		var r = checkValue(color.r + random());
-		var g = checkValue(color.g + random());
-		var b = checkValue(color.b + random());
-
-		return 'rgba('+r+','+g+','+b+',0.05);'
-	}
-
-
-	function createElement(){
-	 	var self = {};
-	 	var canvas = singleton.canvas.getInstance();
-	 	var ctx = canvas.getCtx();
-	 	var tick = singleton.tick.getInstance();
-
-	 	var radius = 20;
-	 	var color = randomColor();
-
-	 	var acc = getRandomAcceleration();
-	 	var vel = new PVector(0,0);
-	 	var loc = new PVector(window.innerWidth * Math.random(), window.innerHeight * Math.random());
-
-	 	var grow = createGrow(radius,60);
-	 	var rotate = createRotate();
-	 	var wings = createDrawWings();
-
-
-	 	init();
-
-	 	function init(){
-	 		render();
-	 	}
-
-	 	function getRandomAcceleration(mag){
-	 		var mag = mag || 1;
-	 		return new PVector(stupid.random.negpos() * Math.random() * mag,stupid.random.negpos() * Math.random() * mag);
-	 	}
-
-		function draw(){
-			ctx.save();
-				ctx.fillStyle = color;
-				ctx.beginPath();
-				ctx.arc(loc.x,loc.y,1, 0 , 2*Math.PI);
-				ctx.fill();
-			ctx.restore();
-		}
-
-
-		function update(){
-	 		vel.add(acc);
-	 		vel.limit(0.5);
-		    loc.add(vel);
-	 		acc.mult(0);
-	 	}
-
-	 	
-	 	function applyForce(force){
-    		acc.add(force);
-	 	}
-
-		function bounderies(){
-			var width = window.innerWidth;
-			var height = window.innerHeight;
-
-			if(loc.x < radius * -1){
-				loc.x = width + radius;
-			}else if(loc.x > width + radius){
-				loc.x = radius * -1;
-			}
-
-			if(loc.y < radius * -1){
-				loc.y = height + radius;
-			}else if(loc.y > height + radius){
-				loc.y = radius * -1;
-			}
-		}
-
-		function createDrawWings(){
-
-			var rotateSpeed = Math.random() * 300 + 300;
-
-			return function() {
-				var rot = Math.PI * tick.getTick() / rotateSpeed % Math.PI * 2;
-				ctx.save();
-					ctx.translate(loc.x,loc.y);
-					ctx.rotate(rot + Math.random() / 2);
-						ctx.strokeStyle = color;
-						ctx.beginPath();
-						ctx.moveTo(radius * -1, 0);
-						ctx.lineTo(radius, 0);
-						ctx.stroke();
-				ctx.restore();
-			};
-
-		}
-		function createGrow(minRadius, maxRadius){
-			var toggle = true;
-			var increase = 0.1;
-			return function() {
-				if(radius > maxRadius || radius < minRadius) toggle = !toggle;
-				if(toggle){
-					radius += increase;
-				}else{
-					radius -= increase;
-				}
-			};
-		}
-
-		function createRotate(){
-			var mag = 1.1;
-			var frequency = 200;
-	 		var frequencyCos = Math.random() * frequency + frequency;
-	 		var frequencySin = Math.random() * frequency + frequency;
-	 		var offset = stupid.random.negpos() * Math.random() * 1000 + 10;
-
-	 		return function(){
-		 		var frame = tick.getTick() + offset;
-		 		var cos = Math.cos(frame / frequencyCos );
-		 		var sin = Math.sin(frame / frequencySin );
-		 		var rot = new PVector(cos,sin);
-		 		rot.normalize();
-		 		rot.mult(mag);
-		 		applyForce(rot);
-	 		}
-	 	}
-
-	 	function render(){
-	 		//rotate();
-			update();
-			bounderies();
-			grow();
-			wings();
-			//draw();
-	 	}
-
-		self.applyForce = applyForce;
-		self.render = render;
-
-		self.getLocation = function(){
-			return loc;
-		}
-
-		self.getVelocity = function(){
-			return vel;
-		}
-
-		self.getAcceleration = function() {
-			return acc;
-		};
-
-		self.getRadius = function() {
-			return radius;
-		};
-
-	 	return self;
-	} 
-
-	module.exports = createElement;
-
-}())
-},{"../pvector":6,"../singleton":7,"../stupid":8}],4:[function(require,module,exports){
+},{"../js/process_001/collection":4,"../js/singleton":7}],2:[function(require,module,exports){
 (function(){
 	
 	var singleton = require('./singleton');
@@ -338,7 +74,7 @@
 	module.exports = createCanvas;
 
 }())
-},{"./singleton":7}],5:[function(require,module,exports){
+},{"./singleton":7}],3:[function(require,module,exports){
 (function(){
 
 	/*
@@ -370,7 +106,286 @@
     module.exports = createDocument; 
 
 }())
-},{}],6:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
+(function(){
+
+	var singleton = require('../singleton');
+	var stupid = require('../stupid');
+	var createElement = require('./element');
+
+	function createCollection(){
+	 	var self = {}; 
+	 	var numOfElements = 400;  
+	 	var elements = [];
+	 	var loop = stupid.createCollectionLoop(elements);
+	 	var identify = { callback:render };
+	 	var canvas = singleton.canvas.getInstance();
+	 	var ctx = canvas.getCtx();
+
+	 	init();
+
+	 	function init(){
+	 		createElements();
+	 		singleton.tick.getInstance().add(identify);	
+	 	}
+
+	 	function render(){
+
+	 		// singleton.canvas.getInstance().clear(); 
+	 		// ctx.fillStyle = 'rgba(0,0,0,0.05);';
+	 		// ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
+
+	 		renderElemenets();
+
+	 		canvas.update();
+
+	 	}
+
+	 	function renderElemenets(){
+	 		loop(outerLoop);
+
+	 		function outerLoop(el){
+	 			
+	 			loop(innerLoop);
+
+	 			function innerLoop(other){
+	 				if(el === other) return;
+	 				
+	 				var loc = el.getLocation(); 
+	 				var otherLoc = other.getLocation();
+
+	 				var dist = PVector.dist(loc, otherLoc);
+	 				dist -= el.getRadius() + other.getRadius();
+	 				dist = parseInt(dist);
+
+	 				if(dist < 20 && dist > 0){ 
+	 					var diff = other.getVelocity(); //PVector.sub(loc, otherLoc);
+	 					//var divide = Math.pow(dist,1.25);
+	 					diff.normalize();
+	 					// diff.mult(dist / 2);
+	 					el.applyForce(diff);
+	 				}else if(dist < 0){
+	 					var diff = PVector.sub(loc, otherLoc);
+	 					diff.normalize();
+	 					el.applyForce(diff);
+	 				}
+	 			}
+
+	 			el.render();
+	 		}
+	 	}
+
+
+	 	function createElements(){
+	 		for (var i = 0; i < numOfElements; i++) {
+	 			elements.push(createElement());			
+	 		};
+	 	}
+
+	 	return self;
+	} 
+
+	module.exports = createCollection;
+}())
+},{"../singleton":7,"../stupid":8,"./element":5}],5:[function(require,module,exports){
+(function(){
+	
+	var singleton = require('../singleton');
+	var PVector = require('../pvector');
+	var stupid = require('../stupid');
+
+	function randomColor(){
+		
+		function random(){
+			var ran = stupid.random.negpos() * Math.random() * 15;
+			return ran;
+		}
+
+		function checkValue(x){
+			return parseInt(x < 0 ? 0 : x > 256 ? 256 : x);
+		}
+
+		colors = [
+			{ r:224, g:221, b:152 },
+			{ r:150, g:148, b:102 },
+			{ r:233, g:231, b:183 },
+			{ r:22, g:79, b:112 },
+			// { r:10, g:35, b:35 }
+		];
+
+
+		var color = colors[parseInt(Math.random() * colors.length)];
+		var r = checkValue(color.r + random());
+		var g = checkValue(color.g + random());
+		var b = checkValue(color.b + random());
+
+		return 'rgba('+r+','+g+','+b+',0.75);'
+	}
+
+
+	function createElement(){
+	 	var self = {};
+	 	var canvas = singleton.canvas.getInstance();
+	 	var ctx = canvas.getCtx();
+	 	var tick = singleton.tick.getInstance();
+
+	 	
+	 	var color = randomColor();
+
+	 	var dir = getRandomAcceleration(5);
+	 	var acc = dir;
+	 	var vel = new PVector(0,0);
+	 	var loc = new PVector(window.innerWidth * Math.random(), window.innerHeight * Math.random());
+
+	 	var minRadius = 10;
+	 	var maxRadius = 20;
+	 	var radius = Math.random() * (maxRadius - minRadius) + minRadius;
+	 	var grow = createGrow(minRadius,maxRadius);
+	 	var rotate = createRotate();
+	 	var wings = createDrawWings();
+
+	 	var limit = 0.2; 
+
+	 	init();
+
+	 	function init(){
+	 		render();
+	 	}
+
+	 	function getRandomAcceleration(mag){
+	 		var mag = mag || 1;
+	 		return new PVector(stupid.random.negpos() * Math.random() * mag,stupid.random.negpos() * Math.random() * mag);
+	 	}
+
+		function draw(){
+			ctx.save();
+				ctx.fillStyle = color;
+				ctx.beginPath();
+				ctx.arc(loc.x,loc.y, radius, 0, 2 * Math.PI);
+				ctx.fill();
+			ctx.restore();
+		}
+
+
+		function update(){
+			acc.limit(limit);
+
+			// applyForce(dir);
+
+	 		vel.add(acc);
+	 		vel.limit(limit);
+
+		    loc.add(vel);
+
+	 		acc.mult(0);
+	 	}
+
+	 	
+	 	function applyForce(force){
+    		acc.add(force);
+	 	}
+
+		function bounderies(){
+			var width = window.innerWidth;
+			var height = window.innerHeight;
+
+			if(loc.x < radius * -1){
+				loc.x = width + radius;
+			}else if(loc.x > width + radius){
+				loc.x = radius * -1;
+			}
+
+			if(loc.y < radius * -1){
+				loc.y = height + radius;
+			}else if(loc.y > height + radius){
+				loc.y = radius * -1;
+			}
+		}
+
+		function createDrawWings(){
+
+			var rotateSpeed = Math.random() * 300 + 300;
+
+			return function() {
+				var rot = Math.PI * tick.getTick() / rotateSpeed % Math.PI * 2;
+				ctx.save();
+					ctx.translate(loc.x,loc.y);
+					ctx.rotate(rot + Math.random() / 2);
+						ctx.strokeStyle = color;
+						ctx.beginPath();
+						ctx.moveTo(radius * -1, 0);
+						ctx.lineTo(radius, 0);
+						ctx.stroke();
+				ctx.restore();
+			};
+
+		}
+		function createGrow(minRadius, maxRadius){
+			var toggle = true;
+			var increase = 0.05;
+			return function() {
+				if(radius > maxRadius || radius < minRadius) toggle = !toggle;
+				if(toggle){
+					radius += increase;
+				}else{
+					radius -= increase;
+				}
+			};
+		}
+
+		function createRotate(){
+			var mag = 1;
+			var frequency = 200;
+	 		var frequencyCos = Math.random() * frequency + frequency;
+	 		var frequencySin = Math.random() * frequency + frequency;
+	 		var offset = stupid.random.negpos() * Math.random() * 1000 + 10;
+
+	 		return function(){
+		 		var frame = tick.getTick() + offset;
+		 		var cos = Math.cos(frame / frequencyCos );
+		 		var sin = Math.sin(frame / frequencySin );
+		 		var rot = new PVector(cos,sin);
+		 		rot.normalize();
+		 		rot.mult(mag);
+		 		applyForce(rot);
+	 		}
+	 	}
+
+	 	function render(){
+			update();
+			bounderies();
+	 		rotate();
+			grow();
+			// wings();
+			draw();
+	 	}
+
+		self.applyForce = applyForce;
+		self.render = render;
+
+		self.getLocation = function(){
+			return loc;
+		}
+
+		self.getVelocity = function(){
+			return vel;
+		}
+
+		self.getAcceleration = function() {
+			return acc;
+		};
+
+		self.getRadius = function() {
+			return radius;
+		};
+
+	 	return self;
+	} 
+
+	module.exports = createElement;
+
+}())
+},{"../pvector":6,"../singleton":7,"../stupid":8}],6:[function(require,module,exports){
 /**
  * @module Math
  * @for PVector
@@ -880,7 +895,7 @@
 
 	module.exports = singleton;
 }())
-},{"./canvas":4,"./document":5,"./stupid":8,"./tick":9}],8:[function(require,module,exports){
+},{"./canvas":2,"./document":3,"./stupid":8,"./tick":9}],8:[function(require,module,exports){
 (function(){
 
     var stupid = {};

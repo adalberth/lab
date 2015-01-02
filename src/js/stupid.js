@@ -127,6 +127,14 @@
     stupid.math.toDeg = function(radians){
         return radians * (180/Math.PI);
     }
+
+    stupid.math.atan2Normalized = function(atan2) {
+        var result = atan2;
+        if (result < 0) {
+            result += (2 * Math.PI);
+        }
+        return(result);
+    }
     /*
     * Util
     */

@@ -25,11 +25,11 @@
 
                 (function _animloop() {
                     requestId = requestAnimFrame(_animloop);
-                    // _render();
-                    if( (Date.now() - ts) > fr){
-                        ts = Date.now();
-                        _render(); 
-                    }
+                    _render();
+                    // if( (Date.now() - ts) > fr){
+                    //     ts = Date.now();
+                    //     _render(); 
+                    // }
                     
                 })();
 
@@ -39,7 +39,6 @@
 
         function _render() {
             tick += 1;
-
             for (var i = 0; i < collection.length; i++) {
                 collection[i].callback();
             };

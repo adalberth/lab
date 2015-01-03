@@ -22,12 +22,12 @@
 
 
 	 	var canvas = document.getElementById('canvas');
-	 	var preCanvas = document.createElement('canvas');
+	 	// var preCanvas = document.createElement('canvas');
 
 	 	_resize();
 
 	 	var ctx = canvas.getContext('2d');
-	 	var preCtx = preCanvas.getContext('2d');
+	 	// var preCtx = preCanvas.getContext('2d');
 
  		window.addEventListener('resize', _resize, false);
 
@@ -35,8 +35,8 @@
 	 		canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
-            preCanvas.width = window.innerWidth;
-            preCanvas.height = window.innerHeight;
+            // preCanvas.width = window.innerWidth;
+            // preCanvas.height = window.innerHeight;
 	 	}
 
 	 	function _clear(){
@@ -44,28 +44,29 @@
 	 	}
 
 	 	that.save = function() {
-	 		preCtx.save();
+	 		ctx.save(); //preCtx.save();
 	 	};
 
 	 	that.restore = function() {
-	 		preCtx.restore();
+	 		ctx.restore(); //preCtx.restore();
 	 	};
 
 	 	that.clear = function(){
-	 		_clear.call(preCtx); 
+	 		_clear.call(ctx); 
+	 		// _clear.call(preCtx);  
 	 	};
 
 	 	that.getCanvas = function(){
-	 		return preCanvas;
+	 		return canvas; //preCanvas;
 	 	};
 
 	 	that.getCtx = function(){
-	 		return preCtx;
+	 		return ctx; //preCtx;
 	 	};
 
 	 	that.update = function(){
-	 		_clear.call(ctx);
-	 		ctx.drawImage(preCanvas, 0, 0);
+	 		// _clear.call(ctx);
+	 		// ctx.drawImage(preCanvas, 0, 0);
 	 	};
 
 	 	return that;
@@ -115,7 +116,7 @@
 
 	function createCollection(){
 	 	var self = {}; 
-	 	var numOfElements = window.innerWidth / 1.5;  
+	 	var numOfElements = 200; //window.innerWidth / 4;
 	 	var elements = [];
 	 	var loop = stupid.createCollectionLoop(elements);
 	 	var identify = { callback:render };
@@ -143,43 +144,41 @@
 
 	 	function renderElemenets(){
 	 		loop(outerLoop);
-
-	 		function outerLoop(el){
-	 			
-	 			loop(innerLoop); 
-
-	 			function innerLoop(other){
-	 				if(el === other) return;
-	 				
-	 				var loc = el.getLocation(); 
-	 				var otherLoc = other.getLocation();
-
-	 				var dist = PVector.dist(loc, otherLoc);
-	 				dist -= el.getRadius() + other.getRadius();
-	 				dist = parseInt(dist);
-
-	 				if(dist < 20 && dist > 0){ 
-	 					var diff = other.getVelocity(); //PVector.sub(loc, otherLoc);
-	 					//var divide = Math.pow(dist,1.25);
-	 					diff.normalize();
-	 					// diff.mult(dist / 2);
-	 					el.applyForce(diff);
-	 				}else if(dist < 0){
-	 					var diff = PVector.sub(loc, otherLoc);
-	 					diff.normalize();
-	 					diff.mult(1);
-	 					el.applyForce(diff);
-	 				}
-	 			}
-
-	 			el.render();
-	 		}
 	 	}
+
+	 	function outerLoop(el){
+ 			el.render();
+ 			loop(innerLoop, el); 
+ 		}
+
+ 		function innerLoop(other, i, data){
+ 			var el = data[0];
+			if(el.getID() === other.getID()) return;
+			
+			var loc = el.getLocation(); 
+			var otherLoc = other.getLocation();
+
+			var dist = PVector.dist(loc, otherLoc);
+			dist -= el.getRadius() + other.getRadius();
+			dist = parseInt(dist);
+
+			if(dist < 20 && dist > 0){ 
+				var diff = other.getVelocity(); 
+				diff.normalize();
+				diff.div(dist / 3);
+				el.applyForce(diff);
+			}else if(dist < 0){
+				var diff = PVector.sub(loc, otherLoc);
+				diff.normalize();
+				diff.mult(1);
+				el.applyForce(diff);
+			}
+		}
 
 
 	 	function createElements(){
 	 		for (var i = 0; i < numOfElements; i++) {
-	 			elements.push(createElement());			
+	 			elements.push(createElement(i));			
 	 		};
 	 	}
 
@@ -197,6 +196,12 @@
 
 	function randomColor(){
 		
+		var colors = [
+			[255, 255, 255],
+			[22, 79, 112],
+			[10, 39, 55]
+		];
+
 		function random(){
 			var ran = stupid.random.negpos() * Math.random() * 20;
 			return ran;
@@ -206,32 +211,25 @@
 			return parseInt(x < 0 ? 0 : x > 256 ? 256 : x);
 		}
 
-		colors = [
-			// { r:224, g:221, b:152 },
-			// { r:150, g:148, b:102 },
-			// { r:233, g:231, b:183 },
-			{ r:22, g:79, b:112 },
-			{ r:255, g:255, b:255 },
-			// { r:10, g:35, b:35 }
-		];
+		function randomItemInArray(){
+			return parseInt(Math.random() * colors.length);
+		}
 
+		var color = colors[randomItemInArray()];
+		var r = checkValue(color[0] + random());
+		var g = checkValue(color[1] + random());
+		var b = checkValue(color[2] + random());
 
-		var color = colors[parseInt(Math.random() * colors.length)];
-		var r = checkValue(color.r + random());
-		var g = checkValue(color.g + random());
-		var b = checkValue(color.b + random());
-
-		return 'rgba('+r+','+g+','+b+',1);'
+		return 'rgba('+r+','+g+','+b+',0.25);'
 	}
 
 
-	function createElement(size, color){
+	function createElement(id){
 	 	var self = {};
 	 	var canvas = singleton.canvas.getInstance();
 	 	var ctx = canvas.getCtx();
 	 	var tick = singleton.tick.getInstance();
 
-	 	
 	 	var color = color || randomColor();
 
 	 	var dir = getRandomAcceleration(5);
@@ -239,7 +237,7 @@
 	 	var vel = new PVector(0,0);
 	 	var loc = new PVector(window.innerWidth * Math.random(), window.innerHeight * Math.random());
 
-	 	var limit = 1; 
+	 	var limit = 0.5; //0.25; 
 
 	 	var size = size || 1;
 	 	var minRadius = 1 + size;
@@ -247,9 +245,6 @@
 	 	var radius = Math.random() * (maxRadius - minRadius) + minRadius;
 	 	var grow = createGrow(minRadius,maxRadius);
 	 	var rotate = createRotate();
-	 	var wings = createDrawWings();
-
-	 	
 
 	 	init();
 
@@ -263,19 +258,15 @@
 	 	}
 
 		function draw(){
-			ctx.save();
-				ctx.fillStyle = color;
-				ctx.beginPath();
-				ctx.arc(loc.x,loc.y, radius, 0, 2 * Math.PI);
-				ctx.fill();
-			ctx.restore();
+			ctx.fillStyle = color;
+			ctx.beginPath();
+			ctx.arc(loc.x,loc.y, radius, 0, 2 * Math.PI);
+			ctx.fill();
 		}
 
 
 		function update(){
 			acc.limit(limit);
-
-			// applyForce(dir);
 
 	 		vel.add(acc);
 	 		vel.limit(limit);
@@ -291,40 +282,19 @@
 	 	}
 
 		function bounderies(){
-			var width = window.innerWidth;
-			var height = window.innerHeight;
-
 			if(loc.x < radius * -1){
-				loc.x = width + radius;
-			}else if(loc.x > width + radius){
+				loc.x = window.innerWidth + radius;
+			}else if(loc.x > window.innerWidth + radius){
 				loc.x = radius * -1;
 			}
 
 			if(loc.y < radius * -1){
-				loc.y = height + radius;
-			}else if(loc.y > height + radius){
+				loc.y = window.innerHeight + radius;
+			}else if(loc.y > window.innerHeight + radius){
 				loc.y = radius * -1;
 			}
 		}
 
-		function createDrawWings(){
-
-			var rotateSpeed = Math.random() * 300 + 300;
-
-			return function() {
-				var rot = Math.PI * tick.getTick() / rotateSpeed % Math.PI * 2;
-				ctx.save();
-					ctx.translate(loc.x,loc.y);
-					ctx.rotate(rot + Math.random() / 2);
-						ctx.strokeStyle = color;
-						ctx.beginPath();
-						ctx.moveTo(radius * -1, 0);
-						ctx.lineTo(radius, 0);
-						ctx.stroke();
-				ctx.restore();
-			};
-
-		}
 		function createGrow(minRadius, maxRadius){
 			var toggle = true;
 			var increase = limit / 100;
@@ -361,7 +331,6 @@
 			bounderies();
 	 		rotate();
 			grow();
-			// wings();
 			draw();
 	 	}
 
@@ -382,6 +351,10 @@
 
 		self.getRadius = function() {
 			return radius;
+		};
+
+		self.getID = function() {
+			return id;
 		};
 
 	 	return self;
@@ -1088,11 +1061,11 @@
 
                 (function _animloop() {
                     requestId = requestAnimFrame(_animloop);
-                    // _render();
-                    if( (Date.now() - ts) > fr){
-                        ts = Date.now();
-                        _render(); 
-                    }
+                    _render();
+                    // if( (Date.now() - ts) > fr){
+                    //     ts = Date.now();
+                    //     _render(); 
+                    // }
                     
                 })();
 
@@ -1102,7 +1075,6 @@
 
         function _render() {
             tick += 1;
-
             for (var i = 0; i < collection.length; i++) {
                 collection[i].callback();
             };

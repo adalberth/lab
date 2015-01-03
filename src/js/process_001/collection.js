@@ -6,7 +6,7 @@
 
 	function createCollection(){
 	 	var self = {}; 
-	 	var numOfElements = window.innerWidth / 1.5;  
+	 	var numOfElements = 200; //window.innerWidth / 4;
 	 	var elements = [];
 	 	var loop = stupid.createCollectionLoop(elements);
 	 	var identify = { callback:render };
@@ -34,43 +34,41 @@
 
 	 	function renderElemenets(){
 	 		loop(outerLoop);
-
-	 		function outerLoop(el){
-	 			
-	 			loop(innerLoop); 
-
-	 			function innerLoop(other){
-	 				if(el === other) return;
-	 				
-	 				var loc = el.getLocation(); 
-	 				var otherLoc = other.getLocation();
-
-	 				var dist = PVector.dist(loc, otherLoc);
-	 				dist -= el.getRadius() + other.getRadius();
-	 				dist = parseInt(dist);
-
-	 				if(dist < 20 && dist > 0){ 
-	 					var diff = other.getVelocity(); //PVector.sub(loc, otherLoc);
-	 					//var divide = Math.pow(dist,1.25);
-	 					diff.normalize();
-	 					// diff.mult(dist / 2);
-	 					el.applyForce(diff);
-	 				}else if(dist < 0){
-	 					var diff = PVector.sub(loc, otherLoc);
-	 					diff.normalize();
-	 					diff.mult(1);
-	 					el.applyForce(diff);
-	 				}
-	 			}
-
-	 			el.render();
-	 		}
 	 	}
+
+	 	function outerLoop(el){
+ 			el.render();
+ 			loop(innerLoop, el); 
+ 		}
+
+ 		function innerLoop(other, i, data){
+ 			var el = data[0];
+			if(el.getID() === other.getID()) return;
+			
+			var loc = el.getLocation(); 
+			var otherLoc = other.getLocation();
+
+			var dist = PVector.dist(loc, otherLoc);
+			dist -= el.getRadius() + other.getRadius();
+			dist = parseInt(dist);
+
+			if(dist < 20 && dist > 0){ 
+				var diff = other.getVelocity(); 
+				diff.normalize();
+				diff.div(dist / 3);
+				el.applyForce(diff);
+			}else if(dist < 0){
+				var diff = PVector.sub(loc, otherLoc);
+				diff.normalize();
+				diff.mult(1);
+				el.applyForce(diff);
+			}
+		}
 
 
 	 	function createElements(){
 	 		for (var i = 0; i < numOfElements; i++) {
-	 			elements.push(createElement());			
+	 			elements.push(createElement(i));			
 	 		};
 	 	}
 

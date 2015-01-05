@@ -6,7 +6,7 @@
 
 	function createCollection(){
 	 	var self = {}; 
-	 	var numOfElements = 200; //window.innerWidth / 4;
+	 	var numOfElements = 500; //window.innerWidth / 4;
 	 	var elements = [];
 	 	var loop = stupid.createCollectionLoop(elements);
 	 	var identify = { callback:render };
@@ -23,13 +23,10 @@
 	 	function render(){
 
 	 		// singleton.canvas.getInstance().clear(); 
-	 		// ctx.fillStyle = 'rgba(0,0,0,0.05);';
+	 		// ctx.fillStyle = 'rgba(2, 2, 24, 0.01)'; 
 	 		// ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
 
-	 		renderElemenets();
-
-	 		canvas.update();
-
+	 		renderElemenets(); 
 	 	}
 
 	 	function renderElemenets(){
@@ -38,35 +35,35 @@
 
 	 	function outerLoop(el){
  			el.render();
- 			loop(innerLoop, el); 
+ 			// loop(innerLoop, el); 
  		}
 
- 		function innerLoop(other, i, data){
- 			var el = data[0];
-			if(el.getID() === other.getID()) return;
+ 	// 	function innerLoop(other, i, data){
+ 	// 		var el = data[0];
+		// 	if(el.getID() === other.getID()) return;
 			
-			var loc = el.getLocation(); 
-			var otherLoc = other.getLocation();
+		// 	var loc = el.getLocation(); 
+		// 	var otherLoc = other.getLocation();
 
-			var dist = PVector.dist(loc, otherLoc);
-			dist -= el.getRadius() + other.getRadius();
-			dist = parseInt(dist);
+		// 	var dist = PVector.dist(loc, otherLoc);
+		// 	dist -= el.getRadius() + other.getRadius();
+		// 	dist = parseInt(dist);
 
-			if(dist < 20){
-				var otherDist = dist < 1 ? 1 : dist / 10 + 1;
-				var force = other.getVelocity(); 
-				force.normalize();
-				// force.div( otherDist / 5);
-				el.applyForce(force);
-			}
+		// 	if(dist < 20){
+		// 		var otherDist = dist < 1 ? 1 : dist / 10 + 1;
+		// 		var force = other.getVelocity(); 
+		// 		force.normalize();
+		// 		// force.div( otherDist / 5);
+		// 		el.applyForce(force);
+		// 	}
 
-			if(dist < 0){
-				var diff = PVector.sub(loc, otherLoc);
-				diff.normalize();
-				// diff.mult(1.5);
-				el.applyForce(diff);
-			}
-		}
+		// 	if(dist < 0){
+		// 		var diff = PVector.sub(loc, otherLoc);
+		// 		diff.normalize();
+		// 		// diff.mult(1.5);
+		// 		el.applyForce(diff);
+		// 	}
+		// }
 
 
 	 	function createElements(){

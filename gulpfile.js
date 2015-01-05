@@ -49,7 +49,8 @@ gulp.task('js', function () {
 			settings.source + '/app/**/*.js'
 		]) 
 		.pipe(browserified)
-		.pipe(gulp.dest(settings.build + '/js'));
+		.pipe(gulp.dest(settings.build + '/js'))
+		.pipe(livereload());
 });
 
 // Minify Vendor (Bower)
@@ -91,11 +92,11 @@ gulp.task('default', ['build'], function() {
 
 	gulp.watch([settings.source + '/vendor/**/*.js'], 	['lint','vendor']);
 
-	gulp.watch([
-		settings.build + '/**/*.css', 
-		settings.build + '/**/*.js', 	
-		'**/*.html',
-	]).on('change', livereload.changed); 
+	// gulp.watch([
+	// 	settings.build + '/css/*.css', 
+	// 	settings.build + '/js/*.js', 	
+	// 	'**/*.html',
+	// ]).on('change', livereload.changed); 
 
 });
 

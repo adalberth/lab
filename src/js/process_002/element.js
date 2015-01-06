@@ -12,6 +12,7 @@
 			[179, 29, 22],
 			[90, 26, 13],
 			[85, 14, 9],  
+			[0, 0, 0],  
 		];
 
 		function random(){
@@ -105,12 +106,13 @@
 			}
 		}
 
+
 		function createWiggle(){
 			var max = parseInt(Math.random() * 50 + 50);
 
 			return function(){
 				if(tick.getTick() % max < 50){
-					applyForce(getRandomAcceleration(0.8));
+					applyForce(getRandomAcceleration(1));
 					max = parseInt(Math.random() * 50 + 50);
 				}
 			}

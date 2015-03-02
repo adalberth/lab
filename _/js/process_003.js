@@ -1,18 +1,17 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function(){
-	/*
-	* Avoid 
-	*/
-	var createCollection = require('../js/process_001/collection');
+	
+	var createCollection = require('../js/process_003/collection');
 	var singleton = require('../js/singleton');
 
 	$(document).ready(function(){
 		singleton.init(); 
-
-		var elements = createCollection();
+ 
+		var elements = createCollection(); 
 	});	 
+
 }())
-},{"../js/process_001/collection":4,"../js/singleton":7}],2:[function(require,module,exports){
+},{"../js/process_003/collection":4,"../js/singleton":7}],2:[function(require,module,exports){
 (function(){
 	
 	var singleton = require('./singleton');
@@ -116,12 +115,13 @@
 
 	function createCollection(){
 	 	var self = {}; 
-	 	var numOfElements = 200; //window.innerWidth / 4;
+	 	var numOfElements = window.innerHeight / 2; //window.innerWidth / 4;
 	 	var elements = [];
 	 	var loop = stupid.createCollectionLoop(elements);
 	 	var identify = { callback:render };
-	 	var canvas = singleton.canvas.getInstance();
-	 	var ctx = canvas.getCtx();
+	 	var singleCanvas = singleton.canvas.getInstance();
+	 	var canvas = singleCanvas.getCanvas();
+	 	var ctx = singleCanvas.getCtx();
 
 	 	init();
 
@@ -132,13 +132,17 @@
 
 	 	function render(){
 
-	 		// singleton.canvas.getInstance().clear(); 
-	 		// ctx.fillStyle = 'rgba(0,0,0,0.05);';
+	 		// singleCanvas.clear(); 
+	 		// ctx.fillStyle = 'rgba(2, 2, 24, 0.01)'; 
 	 		// ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
+	 		
+	 		ctx.drawImage(canvas,
+	 			0, 0, canvas.width, canvas.height,
+	 			-1, 0, canvas.width, canvas.height
+	 		);
 
-	 		renderElemenets();
+	 		renderElemenets(); 
 
-	 		canvas.update();
 
 	 	}
 
@@ -148,35 +152,35 @@
 
 	 	function outerLoop(el){
  			el.render();
- 			loop(innerLoop, el); 
+ 			// loop(innerLoop, el); 
  		}
 
- 		function innerLoop(other, i, data){
- 			var el = data[0];
-			if(el.getID() === other.getID()) return;
+ 	// 	function innerLoop(other, i, data){
+ 	// 		var el = data[0];
+		// 	if(el.getID() === other.getID()) return;
 			
-			var loc = el.getLocation(); 
-			var otherLoc = other.getLocation();
+		// 	var loc = el.getLocation(); 
+		// 	var otherLoc = other.getLocation();
 
-			var dist = PVector.dist(loc, otherLoc);
-			dist -= el.getRadius() + other.getRadius();
-			dist = parseInt(dist);
+		// 	var dist = PVector.dist(loc, otherLoc);
+		// 	dist -= el.getRadius() + other.getRadius();
+		// 	dist = parseInt(dist);
 
-			if(dist < 20){
-				var otherDist = dist < 1 ? 1 : dist / 10 + 1;
-				var force = other.getVelocity(); 
-				force.normalize();
-				// force.div( otherDist / 5);
-				el.applyForce(force);
-			}
+		// 	if(dist < 20){
+		// 		var otherDist = dist < 1 ? 1 : dist / 10 + 1;
+		// 		var force = other.getVelocity(); 
+		// 		force.normalize();
+		// 		// force.div( otherDist / 5);
+		// 		el.applyForce(force);
+		// 	}
 
-			if(dist < 0){
-				var diff = PVector.sub(loc, otherLoc);
-				diff.normalize();
-				// diff.mult(1.5);
-				el.applyForce(diff);
-			}
-		}
+		// 	if(dist < 0){
+		// 		var diff = PVector.sub(loc, otherLoc);
+		// 		diff.normalize();
+		// 		// diff.mult(1.5);
+		// 		el.applyForce(diff);
+		// 	}
+		// }
 
 
 	 	function createElements(){
@@ -197,12 +201,14 @@
 	var PVector = require('../pvector');
 	var stupid = require('../stupid');
 
-	function randomColor(){
-		
+	function rangeRandomColor(){
 		var colors = [
-			[255, 255, 255],
-			[22, 79, 112],
-			[10, 39, 55]
+			[180, 162, 150],
+			[110, 102, 98],
+			[179, 29, 22],
+			[90, 26, 13],
+			[85, 14, 9],  
+			[0, 0, 0],  
 		];
 
 		function random(){
@@ -223,7 +229,52 @@
 		var g = checkValue(color[1] + random());
 		var b = checkValue(color[2] + random());
 
-		return 'rgba('+r+','+g+','+b+',0.25);'
+		return {
+			r:r,
+			g:g,
+			b:b
+		}
+	}
+
+	function rawRandomColor(){
+		return {
+			r: Math.floor(Math.random() * 256),
+			g: Math.floor(Math.random() * 256),
+			b: Math.floor(Math.random() * 256)
+		}
+	}
+
+	function randomColor(){
+		var color = rawRandomColor();
+
+		return 'rgba('+color.r+','+color.g+','+color.b+',0.25);'
+	}
+
+	function randomColorAnimation(){
+		var r = Math.floor(Math.random() * 256);
+		var g = Math.floor(Math.random() * 256);
+		var b = Math.floor(Math.random() * 256);
+
+		function checkColor(c){
+			var co = c;
+			if(co < 256) co += stupid.random.negpos() * 2;
+			if(co > 255) co = 0;
+			if(co < 0) co = 255;
+			return Math.floor(co);
+		}
+
+		function checkColors(){
+			r = checkColor(r);
+			g = checkColor(g);
+			b = checkColor(b);
+		}
+
+		return function(){
+
+			checkColors();
+
+			return 'rgba('+r+','+g+','+b+',0.25);'
+		}
 	}
 
 
@@ -233,21 +284,23 @@
 	 	var ctx = canvas.getCtx();
 	 	var tick = singleton.tick.getInstance();
 
-	 	var color = color || randomColor();
+	 	var color = randomColorAnimation();
 
-	 	var dir = getRandomAcceleration(5);
-	 	var acc = dir;
+	 	var acc = new PVector(0,0);
 	 	var vel = new PVector(0,0);
-	 	var loc = new PVector(window.innerWidth * Math.random(), window.innerHeight * Math.random());
+	 	var loc = new PVector(window.innerWidth - 1, id * 2); 
 
-	 	var limit = 0.5; //0.25; 
+	 	var limit = (Math.random() * 2.5 + 2.5) / 10;
 
-	 	var size = size || 1;
-	 	var minRadius = 1 + size;
-	 	var maxRadius = 5 + size;
-	 	var radius = Math.random() * (maxRadius - minRadius) + minRadius;
+	 	var size = size || 0;
+	 	var minRadius = 1;
+	 	var maxRadius = 100;
+	 	var radius = 1;
+
 	 	var grow = createGrow(minRadius,maxRadius);
-	 	var rotate = createRotate();
+	 	// var rotate = createRotate();
+	 	// var reset = createReset();
+	 	// var wiggle = createWiggle();  
 
 	 	init();
 
@@ -257,25 +310,23 @@
 
 	 	function getRandomAcceleration(mag){
 	 		var mag = mag || 1;
-	 		return new PVector(stupid.random.negpos() * Math.random() * mag,stupid.random.negpos() * Math.random() * mag);
+	 		return new PVector(0,stupid.random.negpos() * Math.random() * mag);
 	 	}
 
 		function draw(){
-			ctx.fillStyle = color;
-			ctx.beginPath();
-			ctx.arc(loc.x,loc.y, radius, 0, 2 * Math.PI);
-			ctx.fill();
+			var c = color();
+			ctx.fillStyle = c;
+			// ctx.beginPath();
+			// ctx.arc(loc.x, loc.y, radius, 0, 2 * Math.PI);
+			// ctx.fill();
+			ctx.fillRect(loc.x,loc.y,1,radius);
 		}
 
 
 		function update(){
-			acc.limit(limit);
-
 	 		vel.add(acc);
 	 		vel.limit(limit);
-
 		    loc.add(vel);
-
 	 		acc.mult(0);
 	 	}
 
@@ -298,9 +349,21 @@
 			}
 		}
 
+
+		function createWiggle(){
+			var max = parseInt(Math.random() * 50 + 50);
+
+			return function(){
+				if(tick.getTick() % max < 50){
+					applyForce(getRandomAcceleration(1));
+					max = parseInt(Math.random() * 50 + 50);
+				}
+			}
+		}
+
 		function createGrow(minRadius, maxRadius){
 			var toggle = true;
-			var increase = limit / 100;
+			var increase = 1;
 			return function() {
 				if(radius > maxRadius || radius < minRadius) toggle = !toggle;
 				if(toggle){
@@ -311,30 +374,50 @@
 			};
 		}
 
-		function createRotate(){
-			var mag = 1;
-			var frequency = 200;
-	 		var frequencyCos = Math.random() * frequency + frequency;
-	 		var frequencySin = Math.random() * frequency + frequency;
-	 		var offset = stupid.random.negpos() * Math.random() * 1000 + 10;
+		// function createRotate(){
+		// 	var mag = 1;
+	 // 		var f1 = Math.random() * 1000 + 500;
+	 // 		var f2 = Math.random() * 1000 + 500;
+	 // 		var startRotation = Math.random() * 100000;
 
-	 		return function(){
-		 		var frame = tick.getTick() + offset;
-		 		var cos = Math.cos(frame / frequencyCos );
-		 		var sin = Math.sin(frame / frequencySin );
-		 		var rot = new PVector(cos,sin);
-		 		rot.normalize();
-		 		rot.mult(mag);
-		 		applyForce(rot);
-	 		}
-	 	}
+	 // 		return function(){
+	 // 			var frame = tick.getTick() + startRotation;
+	 // 			var cos = Math.cos( frame / f1);
+	 // 			var sin = Math.sin( frame / f2);
+
+		//  		var rot = new PVector(cos,sin);
+		//  		rot.normalize();
+		//  		rot.mult(mag);
+		//  		applyForce(rot);
+	 // 		}
+	 // 	}
+
+	 	// function createReset(){
+
+	 	// 	function getRandom(){
+	 	// 		return parseInt(Math.random() * 500 + 500);
+	 	// 	}
+
+	 	// 	var max = getRandom();
+
+	 	// 	return function(){
+	 	// 		if(tick.getTick() % max === 0){
+	 	// 			loc = new PVector(window.innerWidth / 2, window.innerHeight / 2);
+	 	// 			max = getRandom(); 
+	 	// 			rotate = createRotate();
+	 	// 		}
+	 	// 	}
+	 	// }
 
 	 	function render(){
+	 		applyForce(getRandomAcceleration())
 			update();
-			bounderies();
-	 		rotate();
-			grow();
+	 		// wiggle();
 			draw();
+			// bounderies();
+	 		// rotate();
+			// grow();
+			// reset();
 	 	}
 
 		self.applyForce = applyForce;

@@ -1019,6 +1019,10 @@
         return "rgba("+rgb.r+","+rgb.g+","+rgb.b+",1);";
     }
 
+    stupid.random.between = function(min,max){
+        return Math.random()*(max-min+1)+min;
+    }
+
 
     /*
     * Math

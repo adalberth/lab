@@ -9,9 +9,11 @@ var	autoprefixer = 	require('gulp-autoprefixer');
 var	livereload = 	require('gulp-livereload');
 var	cssGlobbing = 	require('gulp-css-globbing');
 var	stylish = 		require('jshint-stylish');
+var watchify = 		require('watchify');
 var	browserify = 	require('browserify');
 var	source = 		require('vinyl-source-stream');
 var	transform = 	require('vinyl-transform');
+var buffer = 		require('vinyl-buffer');
 var	fs = 			require('fs');
 var	_ = 			require('lodash');
 var sourcemaps = 	require('gulp-sourcemaps');
@@ -37,11 +39,12 @@ gulp.task('lint', function () {
 
 
 // Minify js files
-gulp.task('js', function () {
+
+gulp.task('js', function (e) {
 	'use strict';
 
 	var browserified = transform(function(filename) {
-		var b = browserify(filename);
+		var b = watchify(browserify(filename));
 		return b.bundle();
 	}); 
 
@@ -49,6 +52,8 @@ gulp.task('js', function () {
 			settings.source + '/app/**/*.js'
 		]) 
 		.pipe(browserified)
+		.on('error', function(err){ console.log(err.message); this.emit('end');})
+		// .pipe(buffer())
 		.pipe(gulp.dest(settings.build + '/js'))
 		.pipe(livereload());
 });
@@ -59,7 +64,8 @@ gulp.task('vendor', function () {
 
 	gulp.src(bowerFiles())
 		.pipe(uglify('vendor.min.js'))
-		.pipe(gulp.dest(settings.build + '/js'));
+		.pipe(gulp.dest(settings.build + '/js'))
+		.pipe(livereload());
 })
 
 // Compile vendor css and scss
@@ -77,13 +83,16 @@ gulp.task('css', function () {
 	  }))
 	.on('error', gutil.log)
 	.pipe(autoprefixer('last 1 version', 'ie 9', 'ios 7'))
-	.pipe(gulp.dest(settings.build + '/css'));
+	.pipe(gulp.dest(settings.build + '/css'))
+	.pipe(livereload());
 });
 
 
 gulp.task('default', ['build'], function() {
 	'use strict';
 	livereload.listen();
+
+	gulp.watch(['./gulpfile.js'], ['lint','js']);
 
 	gulp.watch([settings.source + '/scss/**/*.scss'], 	['css']);
 	
@@ -92,11 +101,9 @@ gulp.task('default', ['build'], function() {
 
 	gulp.watch([settings.source + '/vendor/**/*.js'], 	['lint','vendor']);
 
-	// gulp.watch([
-	// 	settings.build + '/css/*.css', 
-	// 	settings.build + '/js/*.js', 	
-	// 	'**/*.html',
-	// ]).on('change', livereload.changed); 
+	gulp.watch([
+		'**/*.html',
+	]).on('change', livereload.changed); 
 
 });
 

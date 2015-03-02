@@ -1,21 +1,17 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function(){
-	/* 
-	* Curved Animation
-	*/
-	var createCurvedAnimation = require('../js/curve/curved_animation');
-	var singleton = require('../js/singleton'); 
+	
+	var createCollection = require('../js/process_004/waves');
+	var singleton = require('../js/singleton');
 
 	$(document).ready(function(){
 		singleton.init(); 
  
-		var curvedAnimation = createCurvedAnimation(); 
-			
-	}); 
+		var elements = createCollection();
+	});	 
 
 }())
-  
-},{"../js/curve/curved_animation":3,"../js/singleton":6}],2:[function(require,module,exports){
+},{"../js/process_004/waves":4,"../js/singleton":5}],2:[function(require,module,exports){
 (function(){
 	
 	var singleton = require('./singleton');
@@ -78,138 +74,7 @@
 	module.exports = createCanvas;
 
 }())
-},{"./singleton":6}],3:[function(require,module,exports){
-(function(){
-
-	var stupid = require('../stupid');
-	var singleton = require('../singleton');
-	var ease = require('../ease');
-
-	function createCurvedAnimation(){
-	 	that = {};
-	 	var identify = {callback:_render};
-	 	var canvas = singleton.canvas.getInstance();
-	 	var ctx = singleton.canvas.getInstance().getCtx();
-	 	
-	 	var x = 100, y = 100;
-	 	var w = 20, h = 20;
-
-	 	var animation = _createAnimation(100,100,50);
-
-
-	 	var cosAnimation = _createEase(0,10,50);
-
-	 	var rad360 = stupid.math.toRad(360);
-	 	var easeAnimation = _createEase(0,rad360,100);
-
-	 	var rad360d = stupid.math.toRad(360 * 2);
-	 	var easeAnimationd = _createEase(0,rad360d,100);
-
-	 	singleton.tick.getInstance().add(identify)
-
-	 	function _createEase(b,c,d){
-	 		var t = 0;
-	 		var e = b;
-	 		return function() {
-	 			if(t > d) return e;
-	 			e = ease.easeInOutSine(t,b,c,d); 
-	 			t += 1;
-	 			return e;
-	 		};
-	 	}
-
-	 	function _createAnimation(ex,ey,t){
-	 		return function() {
-	 			return {
-		 			x: _createEase(x,ex,t),
-		 			y: _createEase(y,ey,t)
-		 		}
-	 		};
-	 	}
-
-
-	 	function _update(){
-	 		_drawS();
-	 		// drawSAndC(); 
-	 		// drawCos();
-	 	}
-
-	 	function _draw(){
-	 		ctx.fillStyle = "red";
-	 		ctx.fillRect(x,y,w,h);
-	 	}
-
-	 	function _render(){
-	 		canvas.clear();
-	 		_update();
-	 		_draw();
-	 		canvas.update();
-	 	}
-
-	 	/*
-	 	* Draw Cos
-	 	*/
-
-
-	 	function drawCos(){
-	 		var value = cosAnimation(); 
-	 		var d = 100;
-	 		var o = 300; 
-	 		var r = 0;
-	 		x = ( (Math.cos(value) * (d + r) ) + o); 
-	 		y = ( (Math.cos(value) * (d - r) ) + o);
-	 	}
-
-	 	/*
-	 	* Draw Straight And Curve
-	 	*/
-
-	 	function drawSAndC(){
-	 		var value = easeAnimationd(); 
-	 		var tx, ty;
-	 		var point = rad360d / 4;
-	 		if(value < point){
-	 			tx = 300; 
-		 		ty = 500 - (value * 100);
-	 		}else if(value < point * 3) {
-	 			tx = Math.cos(value) * 100 + 400; 
-		 		ty = Math.sin(value) * 100 + 200; 
-	 		}else if(value < point * 4) {
-	 			tx = 300; 
-		 		ty = 1100 - (value * 100);
-	 		}
-
-	 		x = tx;
-	 		y = ty;
-	 	}
-	 	/*
-	 	* Draw An S
-	 	*/
-	 	function _drawS(){
-	 		var value = easeAnimation();
-	 		var tx, ty;
-	 		var h = stupid.math.toRad(90);
-
-	 		if(value < rad360 / 2){
-	 			tx = Math.sin(value) * 100 + 300; 
-		 		ty = Math.cos(value) * 80 + 300;
-	 		}else{
-	 			tx = Math.cos(value - h) * 100 + 300; 
-		 		ty = Math.sin(value - h) * 80 + 140;
-	 		}
-
-	 		x = tx;
-	 		y = ty;
-	 	}
-
-	 	return that;
-	 }
-
-	module.exports = createCurvedAnimation; 
-
-}())
-
-},{"../ease":5,"../singleton":6,"../stupid":7}],4:[function(require,module,exports){
+},{"./singleton":5}],3:[function(require,module,exports){
 (function(){
 
 	/*
@@ -241,246 +106,130 @@
     module.exports = createDocument; 
 
 }())
-},{}],5:[function(require,module,exports){
-/*
-*   http://gizma.com/easing/
-*   t: current time (time over periode time++)
-*   b: start value
-*   c: change in value (end value)
-*   d: duration 
-*/
+},{}],4:[function(require,module,exports){
+
+(function(){
+	
+	var singleton = require('../singleton');
+	var stupid = require('../stupid');
+	
+
+	function linearRandomSeriesConstructor(seriesLength, min, max){
+		
+		var randomSeries = [];
+		var min = min;
+		var max = max;
+		var val = min;
+		var seriesLength = seriesLength + 1;
+		var seriesLengthHalf = seriesLength / 2;
+		var subtract = max / seriesLength;
+
+		for (var i = 0; i < seriesLength; i++) {
+			var newVal = val + Math.random() + 1;
+
+			if(seriesLength > seriesLengthHalf && max > min) max -= subtract;
+			console.log(max);
+
+			val = newVal;
+			if(newVal <= min) val = min;
+			if(newVal >= max) val = max;
+
+			randomSeries.push(val);
+		};
+
+		return function(i){
+			return randomSeries[i];
+		}
+	}
+
+	function wavesConstructor(opts){
+	 	var self = {};
+	 	var opts = opts || {};
+
+	 	var singleCanvas = singleton.canvas.getInstance();
+		var tick = singleton.tick.getInstance(); 
+	 	var identify = { callback:render };
+	 	
+	 	var collection = [];
+		var numOfChildren = 180; 
+		var randomSeries = linearRandomSeriesConstructor(numOfChildren,20,50);  
+
+		init();
+
+	 	function init(){ 
+
+	 		for (var i = 0; i < numOfChildren; i++) {
+	 			
+	 			collection.push(waveItemConstructor({
+	 				circleOffset: stupid.math.toRad((360 / numOfChildren) * i),
+	 				number: i,
+	 				scale: randomSeries(i)
+	 			}));
+	 		};
+
+	 		tick.add(identify);
+	 	}
+
+	 	function render(){	
+	 		singleCanvas.clear();
+	 		for (var i = 0; i < collection.length; i++) {
+	 			collection[i].render();
+	 		};
+	 	}
+
+
+	 	return self;
+	}
+
+	function waveItemConstructor(opts){
+	 	var self = {};
+	 	var opts = opts || {};
+
+		var tick = singleton.tick.getInstance(); 
+		var singleCanvas = singleton.canvas.getInstance();
+	 	var canvas = singleCanvas.getCanvas();
+	 	var ctx = singleCanvas.getCtx(); 
+
+	 	var size = opts.size || 1;
+	 	var circleOffset = opts.circleOffset || 0;
+	 	var linearOffset = circleOffset * 4;
+
+	 	var speed = opts.speed || 100;
+	 	var radius = opts.radius || 100;
+	 	var scale = opts.scale || 10;
+	 	var offset = 200;
+
+	 	function growth(){
+	 		var t = tick.getTick() / speed; 
+	 		return Math.sin(t + linearOffset) * scale;
+	 	}
+
+	 	function render(){	
+	 		var t = 1; //tick.getTick() / speed;
+
+	 		var sin = Math.sin(t + circleOffset);
+	 		var cos = Math.cos(t + circleOffset);
 
+	 		var linearGrowth = growth() + radius;
 
-(function() {
+	 		var x = (sin * linearGrowth) + offset;
+	 		var y = (cos * linearGrowth) + offset;
 
-    var Ease = {};
-    window.Ease = Ease;
+	 		ctx.fillStyle = "white";
+			ctx.beginPath();
+			ctx.arc(x,y, size, 0, 2 * Math.PI);
+			ctx.fill();
+	 	}
 
-    // simple linear tweening - no easing, no acceleration
+	 	self.render = render;
 
+	 	return self;
+	}
 
-    Ease.linearTween = function(t, b, c, d) {
-        return c * t / d + b;
-    };
+	module.exports = wavesConstructor;
 
-
-    // quadratic easing in - accelerating from zero velocity
-
-
-    Ease.easeInQuad = function(t, b, c, d) {
-        t /= d;
-        return c * t * t + b;
-    };
-
-
-    // quadratic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutQuad = function(t, b, c, d) {
-        t /= d;
-        return -c * t * (t - 2) + b;
-    };
-
-
-
-    // quadratic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutQuad = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t + b;
-        t--;
-        return -c / 2 * (t * (t - 2) - 1) + b;
-    };
-
-
-    // cubic easing in - accelerating from zero velocity
-
-
-    Ease.easeInCubic = function(t, b, c, d) {
-        t /= d;
-        return c * t * t * t + b;
-    };
-
-
-
-    // cubic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutCubic = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return c * (t * t * t + 1) + b;
-    };
-
-
-
-    // cubic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutCubic = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t * t + b;
-        t -= 2;
-        return c / 2 * (t * t * t + 2) + b;
-    };
-
-
-    // quartic easing in - accelerating from zero velocity
-
-
-    Ease.easeInQuart = function(t, b, c, d) {
-        t /= d;
-        return c * t * t * t * t + b;
-    };
-
-
-
-    // quartic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutQuart = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return -c * (t * t * t * t - 1) + b;
-    };
-
-
-
-    // quartic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutQuart = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t * t * t + b;
-        t -= 2;
-        return -c / 2 * (t * t * t * t - 2) + b;
-    };
-
-
-    // quintic easing in - accelerating from zero velocity
-
-
-    Ease.easeInQuint = function(t, b, c, d) {
-        t /= d;
-        return c * t * t * t * t * t + b;
-    };
-
-
-
-    // quintic easing out - decelerating to zero velocity
-
-
-    Ease.easeOutQuint = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return c * (t * t * t * t * t + 1) + b;
-    };
-
-
-
-    // quintic easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutQuint = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t * t * t * t + b;
-        t -= 2;
-        return c / 2 * (t * t * t * t * t + 2) + b;
-    };
-
-
-    // sinusoidal easing in - accelerating from zero velocity
-
-
-    Ease.easeInSine = function(t, b, c, d) {
-        return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
-    };
-
-
-
-    // sinusoidal easing out - decelerating to zero velocity
-
-
-    Ease.easeOutSine = function(t, b, c, d) {
-        return c * Math.sin(t / d * (Math.PI / 2)) + b;
-    };
-
-
-
-    // sinusoidal easing in/out - accelerating until halfway, then decelerating
-
-
-    Ease.easeInOutSine = function(t, b, c, d) {
-        return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
-    };
-
-
-
-    // exponential easing in - accelerating from zero velocity
-
-
-    Ease.easeInExpo = function(t, b, c, d) {
-        return c * Math.pow(2, 10 * (t / d - 1)) + b;
-    };
-
-
-
-    // exponential easing out - decelerating to zero velocity
-
-
-    Ease.easeOutExpo = function(t, b, c, d) {
-        return c * (-Math.pow(2, -10 * t / d) + 1) + b;
-    };
-
-
-
-    // exponential easing in/out - accelerating until halfway, then decelerating
-
-
-    Ease.easeInOutExpo = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
-        t--;
-        return c / 2 * (-Math.pow(2, -10 * t) + 2) + b;
-    };
-
-
-    // circular easing in - accelerating from zero velocity
-
-
-    Ease.easeInCirc = function(t, b, c, d) {
-        t /= d;
-        return -c * (Math.sqrt(1 - t * t) - 1) + b;
-    };
-
-
-
-    // circular easing out - decelerating to zero velocity
-
-
-    Ease.easeOutCirc = function(t, b, c, d) {
-        t /= d;
-        t--;
-        return c * Math.sqrt(1 - t * t) + b;
-    };
-
-
-
-    // circular easing in/out - acceleration until halfway, then deceleration
-
-
-    Ease.easeInOutCirc = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
-        t -= 2;
-        return c / 2 * (Math.sqrt(1 - t * t) + 1) + b;
-    };
-
-
-    module.exports = Ease;
 }())
-},{}],6:[function(require,module,exports){
+},{"../singleton":5,"../stupid":6}],5:[function(require,module,exports){
 (function(){
 	var stupid = require('./stupid');
 	
@@ -498,7 +247,7 @@
 
 	module.exports = singleton;
 }())
-},{"./canvas":2,"./document":4,"./stupid":7,"./tick":8}],7:[function(require,module,exports){
+},{"./canvas":2,"./document":3,"./stupid":6,"./tick":7}],6:[function(require,module,exports){
 (function(){
 
     var stupid = {};
@@ -662,7 +411,7 @@
     module.exports = stupid;
 
 }())
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function(){
 
 	/*

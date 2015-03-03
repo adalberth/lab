@@ -6,7 +6,7 @@
 	$(document).ready(function(){
 		singleton.init(); 
  
-		var elements = createCollection();
+		var elements = createCollection(); 
 	});	 
 
 }())

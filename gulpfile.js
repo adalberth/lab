@@ -39,23 +39,32 @@ gulp.task('lint', function () {
 
 
 // Minify js files
+var filename = 'process_004.js';
+var bundler = watchify(browserify(settings.source + '/app/' + filename));
 
 gulp.task('js', function (e) {
 	'use strict';
 
-	var browserified = transform(function(filename) {
-		var b = watchify(browserify(filename));
-		return b.bundle();
-	}); 
+	// var browserified = transform(function(filename) {
+	// 	var b = watchify(browserify(filename));
+	// 	return b.bundle();
+	// }); 
 
-	return gulp.src([
-			settings.source + '/app/**/*.js'
-		]) 
-		.pipe(browserified)
-		.on('error', function(err){ console.log(err.message); this.emit('end');})
-		// .pipe(buffer())
-		.pipe(gulp.dest(settings.build + '/js'))
-		.pipe(livereload());
+	// return gulp.src([
+	// 		settings.source + '/app/**/*.js'
+	// 	]) 
+	// 	.pipe(browserified)
+	// 	.on('error', function(err){ console.log(err.message); this.emit('end');})
+	// 	// .pipe(buffer())
+	// 	.pipe(gulp.dest(settings.build + '/js'))
+	// 	.pipe(livereload());
+
+	return bundler.bundle()
+	.on('error', function(err){ console.log(err.message); this.emit('end');})
+	.pipe(source(filename))
+	.pipe(buffer())
+	.pipe(gulp.dest(settings.build + '/js'))
+	.pipe(livereload());
 });
 
 // Minify Vendor (Bower)

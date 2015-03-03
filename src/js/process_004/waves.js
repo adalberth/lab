@@ -32,7 +32,12 @@
 		}
 	}
 
-	function wavesConstructor(opts){
+
+
+
+
+
+	function waveConstructor(opts){
 	 	var self = {};
 	 	var opts = opts || {};
 
@@ -51,7 +56,7 @@
 
 	 		for (var i = 0; i < numOfChildren; i++) {
 	 			
-	 			collection.push(waveItemConstructor({
+	 			collection.push(wavePointConstructor({
 	 				circleOffset: stupid.math.toRad((360 / numOfChildren) * i),
 	 				number: i,
 	 				scale: randomSeries(i)
@@ -66,31 +71,22 @@
 
 	 		ctx.beginPath();
 	 		ctx.strokeStyle = "white";
-	 		ctx.setLineDash([1,5]);
+	 		ctx.setLineDash([1,10]);
 
-	 		var position = prev(collection[0]).getPosition();
+	 		var position = stupid.util.prev(collection[0], collection).getPosition();
 	 		ctx.moveTo(position.lx,position.ly);
 
 	 		for (var i = 0; i < collection.length; i++) {
-	 			collection[i].render(next(collection[i]));
+	 			collection[i].render(stupid.util.next(collection[i], collection));
 	 		};
 
 	 		ctx.stroke();
 	 	}
 
-	 	function next(current){
-		  return collection[ collection.indexOf(current) + 1 ] || collection[0];
-		}
-
-		function prev(current){
-		  return collection[ collection.indexOf(current) - 1 ] || collection[collection.length - 1];
-		}
-
-
 	 	return self;
 	}
 
-	function waveItemConstructor(opts){
+	function wavePointConstructor(opts){
 	 	var self = {};
 	 	var opts = opts || {};
 
@@ -99,12 +95,12 @@
 	 	var canvas = singleCanvas.getCanvas();
 	 	var ctx = singleCanvas.getCtx(); 
 
-	 	var corners = 4;
+	 	var corners = 1;
 	 	var size = opts.size || 1;
 	 	var circleOffset = opts.circleOffset || 0;
 	 	var linearOffset = circleOffset * corners;
 
-	 	var speed = opts.speed || 100;
+	 	var speed = opts.speed || stupid.random.between(100,150);
 	 	var radius = opts.radius || 100;
 	 	var scale = opts.scale || 10;
 	 	var offset = 200;
@@ -125,16 +121,8 @@
 	 		ctx.quadraticCurveTo(x,y,lx,ly);
 	 	}
 
-	 	function lerp(sx, fx, progress){
-	 		var progress = progress || 0.5;
-	 		var px = sx + (fx - sx) * progress;
-			return px;
-	 	}
-
-	 	function calcPosition(next){
-	 		var next = next || {};
-
-	 		var t = tick.getTick() / 500;
+	 	function calcPosition(){
+	 		var t = 0; //tick.getTick() / 500;
 
 	 		var sin = Math.sin(t + circleOffset);
 	 		var cos = Math.cos(t + circleOffset);
@@ -148,9 +136,8 @@
 
 	 	function calcNextPosition(next){
 	 		var nextPosition = next.getPosition();
-
-	 		lx = lerp(nextPosition.x, x);
-	 		ly = lerp(nextPosition.y, y);
+	 		lx = stupid.math.lerp(nextPosition.x, x);
+	 		ly = stupid.math.lerp(nextPosition.y, y);
 	 	}
 
 	 	function getPosition(){
@@ -168,6 +155,6 @@
 	 	return self;
 	}
 
-	module.exports = wavesConstructor;
+	module.exports = waveConstructor;
 
 }())

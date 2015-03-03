@@ -139,6 +139,12 @@
         }
         return(result);
     }
+
+    stupid.math.lerp = function(sx, fx, progress){
+        var progress = progress || 0.5;
+        var px = sx + (fx - sx) * progress;
+        return px;
+    }
     /*
     * Util
     */
@@ -156,6 +162,14 @@
       ys = ys * ys;
      
       return Math.sqrt( xs + ys );
+    }
+
+    stupid.util.next = function(current, collection){
+      return collection[ collection.indexOf(current) + 1 ] || collection[0];
+    }
+
+    stupid.util.prev = function (current, collection){
+      return collection[ collection.indexOf(current) - 1 ] || collection[collection.length - 1];
     }
     
     module.exports = stupid;

@@ -3,37 +3,33 @@
 	
 	var singleton = require('../singleton');
 	var stupid = require('../stupid');
+	var tweenConstructor = require('../tween');
 	
 
-	function linearRandomSeriesConstructor(seriesLength, min, max){
+	// function linearRandomSeriesConstructor(seriesLength, min, max){
 		
-		var randomSeries = [];
-		var min = min;
-		var max = max;
-		var val = min;
-		var seriesLength = seriesLength + 1;
-		var seriesLengthHalf = seriesLength / 2;
-		var subtract = max / seriesLength;
+	// 	var randomSeries = [];
+	// 	var min = min;
+	// 	var max = max;
+	// 	var val = min;
+	// 	var seriesLength = seriesLength + 1;
+	// 	var seriesLengthHalf = seriesLength / 2;
+	// 	var subtract = max / seriesLength;
 
-		for (var i = 0; i < seriesLength; i++) {
-			var newVal = val + (Math.random() * max);
+	// 	for (var i = 0; i < seriesLength; i++) {
+	// 		var newVal = val + (Math.random() * max);
 
-			// if(seriesLength > seriesLengthHalf && max > min) max -= subtract;
+	// 		val = newVal;
+	// 		if(newVal <= min) val = min;
+	// 		if(newVal >= max) val = max;
 
-			val = newVal;
-			if(newVal <= min) val = min;
-			if(newVal >= max) val = max;
+	// 		randomSeries.push(val);
+	// 	};
 
-			randomSeries.push(val);
-		};
-
-		return function(i){
-			return randomSeries[i];
-		}
-	}
-
-
-
+	// 	return function(i){
+	// 		return randomSeries[i];
+	// 	}
+	// }
 
 
 
@@ -48,7 +44,16 @@
 	 	
 	 	var collection = [];
 		var numOfChildren = 11; 
-		var randomSeries = linearRandomSeriesConstructor(numOfChildren,0,50);  
+
+		var position;
+
+		var radius = 0;
+		var radiusTween = tweenConstructor('easeInOutQuad',0,100,120);
+
+		var opacity = 0;
+		var opacityTween = tweenConstructor('easeInOutQuad',0,1, 140);
+
+		// ctx.setLineDash([1,10]);
 
 		init();
 
@@ -59,7 +64,7 @@
 	 			collection.push(wavePointConstructor({
 	 				circleOffset: stupid.math.toRad((360 / numOfChildren) * i),
 	 				number: i,
-	 				scale: randomSeries(i)
+	 				scale: Math.random() * 50,
 	 			}));
 	 		};
 
@@ -69,15 +74,20 @@
 	 	function render(){	
 	 		singleCanvas.clear();
 
-	 		ctx.beginPath();
-	 		ctx.strokeStyle = "white";
-	 		ctx.setLineDash([1,10]);
+	 		opacity = 1; // - opacityTween();
+	 		radius = radiusTween();
 
-	 		var position = stupid.util.prev(collection[0], collection).getPosition();
+	 		ctx.beginPath();
+	 		ctx.strokeStyle = "rgba(255,255,255,"+opacity+")";
+
+	 		position = stupid.util.prev(collection[0], collection).getPosition();
 	 		ctx.moveTo(position.lx,position.ly);
 
 	 		for (var i = 0; i < collection.length; i++) {
+
+	 			collection[i].setRadius(radius);
 	 			collection[i].render(stupid.util.next(collection[i], collection));
+
 	 		};
 
 	 		ctx.stroke();
@@ -103,7 +113,9 @@
 	 	var speed = opts.speed || stupid.random.between(100,150);
 	 	var radius = opts.radius || 100;
 	 	var scale = opts.scale || 10;
-	 	var offset = 200;
+
+	 	var offsetX = 200;
+	 	var offsetY = 200;
 
 	 	var x;
 	 	var y;
@@ -112,13 +124,14 @@
 
 	 	function growth(){
 	 		var t = tick.getTick() / speed; 
-	 		return Math.sin(t + linearOffset) * scale;
+	 		return Math.sin(t) * scale; //Math.sin(t + linearOffset) * scale;
 	 	}
+
 
 	 	function render(next){	
 	 		calcPosition();
 	 		calcNextPosition(next);
-	 		ctx.quadraticCurveTo(x,y,lx,ly);
+	 		ctx.quadraticCurveTo(x,y,lx,ly); 
 	 	}
 
 	 	function calcPosition(){
@@ -128,11 +141,11 @@
 	 		var cos = Math.cos(t + circleOffset);
 
 	 		var linearGrowth = growth() + radius;
+	 		
+	 		x = (sin * linearGrowth) + offsetX;
+	 		y = (cos * linearGrowth) + offsetY;
 
-	 		x = (sin * linearGrowth) + offset;
-	 		y = (cos * linearGrowth) + offset;
-
-	 	}
+	 	} 
 
 	 	function calcNextPosition(next){
 	 		var nextPosition = next.getPosition();
@@ -149,7 +162,12 @@
 	 		}
 	 	}
 
+	 	function setRadius(_radius){
+	 		radius = _radius;
+	 	}
+
 	 	self.getPosition = getPosition;
+	 	self.setRadius = setRadius;
 	 	self.render = render;
 
 	 	return self;

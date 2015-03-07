@@ -1,9 +1,63 @@
-
 (function(){
 	
 	var singleton = require('../singleton');
 	var stupid = require('../stupid');
 	var tweenConstructor = require('../tween');
+
+	/*
+	* Waves
+	*/
+
+	function wavesConstructor(opts){
+	 	var self = {};
+	 	var opts = opts || {};
+	 	var collection = [];
+	 	var noc = 10;
+
+	 	var singleCanvas = singleton.canvas.getInstance();
+	 	var ctx = singleCanvas.getCtx(); 
+		var tick = singleton.tick.getInstance(); 
+	 	var identify = { callback:render };
+		
+		var x = 300;
+		var y = 250;
+
+		var pulseRange = 25;
+
+	 	// Dashed Lines
+		// ctx.setLineDash([1,10]);
+
+	 	init();
+
+	 	function init(){ 
+
+	 		for (var i = 0; i < noc; i++) {
+	 			collection.push(waveConstructor({
+	 				pulseRange: pulseRange / 2,
+	 				radius: (i + 1) * pulseRange,
+	 				x: x,
+	 				y: y
+	 				// scale: i,
+	 				// speed: i * 100
+	 			}));
+	 		};
+
+	 		tick.add(identify);
+	 	}
+
+	 	function render(){
+	 		singleCanvas.clear();
+	 		for (var i = 0; i < collection.length; i++) {
+	 			collection[i].render();
+	 		};
+	 	}
+
+	 	return self;
+	}
+
+	/*
+	* Wave (Singlelar)
+	*/
 
 	function waveConstructor(opts){
 	 	var self = {};
@@ -11,42 +65,47 @@
 
 	 	var singleCanvas = singleton.canvas.getInstance();
 	 	var ctx = singleCanvas.getCtx(); 
-		var tick = singleton.tick.getInstance(); 
-	 	var identify = { callback:render };
 	 	
 	 	var collection = [];
-		var numOfChildren = 11; 
+		var noc = opts.noc || stupid.random.between(8,11); 
 
 		var position;
 
-		var radius = 0;
-		var radiusTween = tweenConstructor('easeInOutQuad',0,100,120);
 
-		var opacity = 0;
+		var radius = opts.radius || 100;
+		var radiusTween = tweenConstructor('easeInOutQuad',0,radius,120);
+
+		var opacity = 0.75;
 		var opacityTween = tweenConstructor('easeInOutQuad',0,1, 140);
 
-		// ctx.setLineDash([1,10]);
+		var pulseRange = opts.pulseRange || 1;
+
+		var scale = opts.scale || radius / pulseRange;
+		var speed = opts.speed || 100;
+
+		var offsetX = opts.x || 0;
+		var offsetY = opts.y || 0;
+
 
 		init();
 
 	 	function init(){ 
-
-	 		for (var i = 0; i < numOfChildren; i++) {
+	 		for (var i = 0; i < noc; i++) {
 	 			
 	 			collection.push(wavePointConstructor({
-	 				circleOffset: stupid.math.toRad((360 / numOfChildren) * i),
+	 				circleOffset: stupid.math.toRad((360 / noc) * i),
 	 				number: i,
-	 				scale: Math.random() * 50
+	 				scale: scale,
+	 				speed: stupid.random.between(100,150),
+	 				radius: radius,
+	 				offsetX: offsetX,
+	 				offsetY: offsetY
 	 			}));
 	 		};
-
-	 		tick.add(identify);
 	 	}
 
 	 	function render(){	
-	 		singleCanvas.clear();
-
-	 		opacity = 1; // - opacityTween();
+	 		// opacity = 1 - opacityTween();
 	 		radius = radiusTween();
 
 	 		ctx.beginPath();
@@ -57,7 +116,7 @@
 
 	 		for (var i = 0; i < collection.length; i++) {
 
-	 			collection[i].setRadius(radius);
+	 			// collection[i].setRadius(radius);
 	 			collection[i].render(stupid.util.next(collection[i], collection));
 
 	 		};
@@ -65,8 +124,15 @@
 	 		ctx.stroke();
 	 	}
 
+
+	 	self.render = render;
+
 	 	return self;
 	}
+
+	/*
+	* Wave Point
+	*/
 
 	function wavePointConstructor(opts){
 	 	var self = {};
@@ -86,10 +152,9 @@
 	 	var radius = opts.radius || 100;
 
 	 	var scale = opts.scale || 0;
-		// var scaleTween = tweenConstructor('easeInOutQuad',1,scale,60);
 
-	 	var offsetX = 200;
-	 	var offsetY = 200;
+	 	var offsetX = opts.offsetX || 0;
+	 	var offsetY = opts.offsetY || 0;
 
 	 	var x;
 	 	var y;
@@ -100,7 +165,7 @@
 
 	 	function growth(){
 	 		var t = tick.getTick() / speed; 
-	 		return Math.sin(t) * scale; //Math.sin(t + linearOffset) * scale;
+	 		return Math.sin(t) * scale;
 	 	} 
 
 	 	function render(next){	
@@ -126,6 +191,10 @@
 	 		var nextPosition = next.getPosition();
 	 		lx = stupid.math.lerp(nextPosition.x, x);
 	 		ly = stupid.math.lerp(nextPosition.y, y);
+
+	 		// Funny nice effect
+	 		// lx = lx > x ? lx * 0.99 : lx * 1.01;
+	 		// ly = ly > y ? ly * 0.99 : ly * 1.01;
 	 	}
 
 	 	function getPosition(){
@@ -148,6 +217,6 @@
 	 	return self;
 	}
 
-	module.exports = waveConstructor;
+	module.exports = wavesConstructor;
 
 }())

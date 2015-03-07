@@ -413,34 +413,6 @@
 	var singleton = require('../singleton');
 	var stupid = require('../stupid');
 	var tweenConstructor = require('../tween');
-	
-
-	// function linearRandomSeriesConstructor(seriesLength, min, max){
-		
-	// 	var randomSeries = [];
-	// 	var min = min;
-	// 	var max = max;
-	// 	var val = min;
-	// 	var seriesLength = seriesLength + 1;
-	// 	var seriesLengthHalf = seriesLength / 2;
-	// 	var subtract = max / seriesLength;
-
-	// 	for (var i = 0; i < seriesLength; i++) {
-	// 		var newVal = val + (Math.random() * max);
-
-	// 		val = newVal;
-	// 		if(newVal <= min) val = min;
-	// 		if(newVal >= max) val = max;
-
-	// 		randomSeries.push(val);
-	// 	};
-
-	// 	return function(i){
-	// 		return randomSeries[i];
-	// 	}
-	// }
-
-
 
 	function waveConstructor(opts){
 	 	var self = {};
@@ -473,7 +445,7 @@
 	 			collection.push(wavePointConstructor({
 	 				circleOffset: stupid.math.toRad((360 / numOfChildren) * i),
 	 				number: i,
-	 				scale: Math.random() * 50,
+	 				scale: Math.random() * 50
 	 			}));
 	 		};
 
@@ -514,14 +486,16 @@
 	 	var canvas = singleCanvas.getCanvas();
 	 	var ctx = singleCanvas.getCtx(); 
 
-	 	var corners = 1;
 	 	var size = opts.size || 1;
 	 	var circleOffset = opts.circleOffset || 0;
-	 	var linearOffset = circleOffset * corners;
 
 	 	var speed = opts.speed || stupid.random.between(100,150);
+	 	var rotateSpeed = opts.rotateSpeed || 750;
+
 	 	var radius = opts.radius || 100;
-	 	var scale = opts.scale || 10;
+
+	 	var scale = opts.scale || 0;
+		// var scaleTween = tweenConstructor('easeInOutQuad',1,scale,60);
 
 	 	var offsetX = 200;
 	 	var offsetY = 200;
@@ -531,11 +505,12 @@
 	 	var lx;
 	 	var ly;
 
+
+
 	 	function growth(){
 	 		var t = tick.getTick() / speed; 
 	 		return Math.sin(t) * scale; //Math.sin(t + linearOffset) * scale;
-	 	}
-
+	 	} 
 
 	 	function render(next){	
 	 		calcPosition();
@@ -544,15 +519,15 @@
 	 	}
 
 	 	function calcPosition(){
-	 		var t = 0; //tick.getTick() / 500;
+	 		var t = tick.getTick() / rotateSpeed;
 
 	 		var sin = Math.sin(t + circleOffset);
 	 		var cos = Math.cos(t + circleOffset);
 
-	 		var linearGrowth = growth() + radius;
+	 		var radiusGrowth = growth() + radius;
 	 		
-	 		x = (sin * linearGrowth) + offsetX;
-	 		y = (cos * linearGrowth) + offsetY;
+	 		x = (sin * radiusGrowth) + offsetX;
+	 		y = (cos * radiusGrowth) + offsetY;
 
 	 	} 
 

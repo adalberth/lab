@@ -1,0 +1,16 @@
+#experiment_001{
+	.wrapper{
+		width: 400px;
+		height: 200px;
+		position: absolute;
+		top: 100px;
+		left: 250px;
+		background-color: rgba(0,0,0,0.1);
+	}
+
+	.square{
+		background-color: rgba(0,0,0,0.2);
+		width: 600px;
+		height: inherit;
+	}
+}

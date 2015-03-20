@@ -39,7 +39,7 @@ gulp.task('lint', function () {
 
 
 // Minify js files
-var filename = 'process_004.js';
+var filename = 'experiment_001.js';
 var bundler = watchify(browserify(settings.source + '/app/' + filename));
 
 gulp.task('js', function (e) {

@@ -431,10 +431,9 @@
 		var x = 300;
 		var y = 250;
 
-		var pulseRange = 25;
 
 	 	// Dashed Lines
-		// ctx.setLineDash([1,10]);
+		ctx.setLineDash([1,10]);
 
 	 	init();
 
@@ -442,11 +441,10 @@
 
 	 		for (var i = 0; i < noc; i++) {
 	 			collection.push(waveConstructor({
-	 				pulseRange: pulseRange / 2,
-	 				radius: (i + 1) * pulseRange,
+	 				radius: (i + 1) * 25,
 	 				x: x,
-	 				y: y
-	 				// scale: i,
+	 				y: y,
+	 				scale: 15,
 	 				// speed: i * 100
 	 			}));
 	 		};
@@ -476,10 +474,9 @@
 	 	var ctx = singleCanvas.getCtx(); 
 	 	
 	 	var collection = [];
-		var noc = opts.noc || stupid.random.between(8,11); 
+		var noc = opts.noc || Math.floor(stupid.random.between(8,12)); 
 
 		var position;
-
 
 		var radius = opts.radius || 100;
 		var radiusTween = tweenConstructor('easeInOutQuad',0,radius,120);
@@ -489,12 +486,13 @@
 
 		var pulseRange = opts.pulseRange || 1;
 
-		var scale = opts.scale || radius / pulseRange;
+		var scale = opts.scale || 10;
 		var speed = opts.speed || 100;
 
 		var offsetX = opts.x || 0;
 		var offsetY = opts.y || 0;
 
+		var circleStartOffset = opts.circleStartOffset || stupid.math.toRad(stupid.random.between(0,360));
 
 		init();
 
@@ -502,7 +500,7 @@
 	 		for (var i = 0; i < noc; i++) {
 	 			
 	 			collection.push(wavePointConstructor({
-	 				circleOffset: stupid.math.toRad((360 / noc) * i),
+	 				circleOffset: stupid.math.toRad((360 / noc) * i) + circleStartOffset,
 	 				number: i,
 	 				scale: scale,
 	 				speed: stupid.random.between(100,150),
@@ -584,7 +582,7 @@
 	 	}
 
 	 	function calcPosition(){
-	 		var t = tick.getTick() / rotateSpeed;
+	 		var t = 1; //tick.getTick() / rotateSpeed;
 
 	 		var sin = Math.sin(t + circleOffset);
 	 		var cos = Math.cos(t + circleOffset);

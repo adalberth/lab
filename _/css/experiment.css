@@ -13,7 +13,7 @@
   -webkit-transform: translate3d(-50%, -50%, 0px);
           transform: translate3d(-50%, -50%, 0px);
 }
-#experiment_001 .square {
+#experiment_001 .content {
   background: -webkit-linear-gradient(45deg, red, green, blue, yellow, brown);
   background: linear-gradient(45deg, red, green, blue, yellow, brown);
   width: 200%;

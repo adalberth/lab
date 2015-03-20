@@ -38,11 +38,11 @@ function controlConstructor(opts){
  
  	function init(){
  		getContent = proxy(function(){
- 			return $('.square');
+ 			return $(opts.content || '.content');
  		});
 
  		getWrapper = proxy(function(){
- 			return $('.wrapper');
+ 			return $(opts.wrapper || '.wrapper');
  		});
 
  		getWindow = proxy(function(){
@@ -116,11 +116,12 @@ function controlConstructor(opts){
  	}
 
  	function mouseMove(e){
- 		// console.log("move",clientX,clientY);
+ 		
  	}
 
  	function mouseUp(e){
  		moving = false;
+ 		
  		getWrapper().off('mousemove touchmove');
  		getWindow().off('mouseup touchup');
  	}
@@ -133,35 +134,41 @@ function controlConstructor(opts){
  		return Boolean(v <= v2);
  	}
 
+
+ 	function calcMove(){
+ 		x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.drag( dragX.move(clientX) ) : slideX.move( dragX.move(clientX) );
+		y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.drag( dragY.move(clientY) ) : slideY.move( dragY.move(clientY) );
+ 	}
+
+ 	function idle(){
+
+ 		if(isBelow(x, 0)){
+			slideX.setEdge(0);
+		}else if(isAbove(x, wDiff)){
+			slideX.setEdge(wDiff);
+		}
+
+		x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.edge() : slideX.idle();
+
+		dragX.update(x);
+
+		if(isBelow(y, 0)){
+			slideY.setEdge(0);
+		}else if(isAbove(y, hDiff)){
+			slideY.setEdge(hDiff);
+		}
+
+		y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.edge() : slideY.idle();
+
+		dragY.update(y); 
+ 	}
+
  	function render(){
 
  		if(moving){
-
- 			x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.drag( dragX.move(clientX) ): slideX.move( dragX.move(clientX) );
- 			;
- 			y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.drag( dragY.move(clientY) ) : slideY.move( dragY.move(clientY) );
-
-
+ 			calcMove();
  		}else{
-
- 			if(isBelow(x, 0)){
- 				slideX.setEdge(0);
- 			}else if(isAbove(x, wDiff)){
- 				slideX.setEdge(wDiff);
- 			}
-
-			x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.edge() : slideX.idle();
- 			dragX.update(x);
-
-
- 			if(isBelow(y, 0)){
- 				slideY.setEdge(0);
- 			}else if(isAbove(y, hDiff)){
- 				slideY.setEdge(hDiff);
- 			}
-
-			y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.edge() : slideY.idle();
- 			dragY.update(y); 
+ 			idle();
  		}
 
  		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";

@@ -34,7 +34,7 @@ function slideConstructor(opts){
  		acc = 0;
  		vel = 0;
  		damp = 0.7;
- 		ease = 0.7;
+ 		ease = 0.8;
  		mass = 1;
  		edge = 0;
  		force = 0;

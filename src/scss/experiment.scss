@@ -3,13 +3,12 @@
 	$h:300px;
 
 	.wrapper{
-		max-width: $w;
-		max-height: $h;
+		// max-width: $w;
+		// max-height: $h; 
+
 		height: 100%;
 		width: 100%;
 		position: absolute;
-		top: 0px;
-		left: 0px;
 		background-color: rgba(0,0,0,0.1);
 
 		overflow: hidden;
@@ -20,10 +19,13 @@
 	}
 
 	.content{
-		background: linear-gradient(45deg, red, green, blue,yellow,brown);
+		$scale: 1;
+		background-image: url('../images/map.jpg'); 
+		background-repeat: no-repeat;
+		background-size: cover;
 		// opacity: 0.5;
-		width: 200%;
-		height: 200%;
+		width: 2560px * $scale;
+		height: 1440px * $scale;
 		pointer-events:none; 
 	}
 }

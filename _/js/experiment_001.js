@@ -268,8 +268,11 @@ function slideConstructor(opts){
  	var opts = opts || {};
  	
  	var force;
+ 	var mForce;
+
  	var acc;
  	var vel;
+
  	var t;
  	var x;
  	var k;
@@ -293,6 +296,7 @@ function slideConstructor(opts){
  	function init(){
  		t = 0;
  		x = 0;
+
  		k = 0.03;
  		acc = 0;
  		vel = 0;
@@ -300,16 +304,18 @@ function slideConstructor(opts){
  		ease = 0.8;
  		mass = 1;
  		edge = 0;
+ 		
  		force = 0;
+ 		mForce = 40;
 
  		dx = false;
  		di = 0;
  		dv = 0;
- 		dd = 0.7;
+ 		dd = 0.8;
  	}
  
  	function move(v){
- 		force = v - t;
+ 		force = maxForce(v - t);
  		t = v;
  		x = v;
 
@@ -341,19 +347,15 @@ function slideConstructor(opts){
  	}
 
  	function edge(){
- 		calc(edge);
-
-		return x;
- 	}
-
- 	function calc(v){
-		force = (-1 * k) * (x - v);
+		force = (-1 * k) * (x - edge);
 	    acc = force / mass;     
 	    vel = damp * (vel + acc);        
 	    x += vel;
 
 	    reset();
-	}
+
+		return x;
+ 	}
 
 	function setEdge(v){
 		edge = v;
@@ -365,6 +367,11 @@ function slideConstructor(opts){
 
  	function reset(){
  		dx = false;
+ 	}
+
+ 	function maxForce(f){
+ 		console.log(f);
+ 		return Math.abs(f) > mForce ? f < 0 ? mForce * -1 : mForce : f;
  	}
 
  	/*

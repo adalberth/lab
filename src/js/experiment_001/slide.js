@@ -8,12 +8,9 @@ function slideConstructor(opts){
  	var t;
  	var x;
  	var k;
-
  	var mass;
-
  	var damp;
- 	var damp2;
-
+ 	var ease;
  	var edge;
 
  	/*
@@ -22,19 +19,18 @@ function slideConstructor(opts){
  
  	function init(){
  		t = 0;
- 		damp = 0.75;
- 		damp2 = 0.9;
+ 		damp = 0.7;
+ 		ease = 0.9;
  		x = 0;
  		acc = 0;
  		vel = 0;
  		force = 0;
- 		k = 0.025;
+ 		k = 0.03;
  		mass = 1;
-
  		edge = 0;
  	}
  
- 	function update(v){
+ 	function move(v){
  		force = v - t;
  		t = v;
  		x = v;
@@ -46,10 +42,8 @@ function slideConstructor(opts){
 		acc = force;     
 		vel = damp * (vel + acc); 
 		x += vel;
-
 		t = x;
-
-		force *= damp2;
+		force *= ease;
 
 		return x;
  	}
@@ -61,7 +55,7 @@ function slideConstructor(opts){
  	}
 
  	function calc(v){
-		force = -k * (x - v);
+		force = (-1 * k) * (x - v);
 	    acc = force / mass;     
 	    vel = damp * (vel + acc);        
 	    x += vel;
@@ -79,7 +73,7 @@ function slideConstructor(opts){
  	* Public
  	*/
  	
- 	self.update = update;
+ 	self.move = move;
  	self.idle = idle;
  	self.edge = edge;
  	self.setEdge = setEdge;

@@ -8,37 +8,36 @@ function controlConstructor(opts){
  	var self = {};
  	var opts = opts || {};
  	
- 	var identify = {callback:render};
  	var tick = tickSingleton.getInstance();
+ 	var identify;
  	
- 	var getSquare;
+ 	var getContent;
  	var getWrapper;
  	var getBody;
 
  	var clientX;
  	var clientY;
 
- 	var itemX;
- 	var itemY;
-
  	var x;
  	var y;
 
  	var dragX;
  	var dragY;
+
  	var slideX;
  	var slideY;
 
- 	var moving;
+ 	var wDiff;
+ 	var hDiff;
 
- 	var state;
+ 	var moving;
 	 	
  	/*
  	* Private
  	*/
  
  	function init(){
- 		getSquare = proxy(function(){
+ 		getContent = proxy(function(){
  			return $('.square');
  		});
 
@@ -56,88 +55,112 @@ function controlConstructor(opts){
  		slideX = slideConstructor();
  		slideY = slideConstructor();
 
- 		itemX = 0;
- 		itemY = 0;
-
  		x = 0;
  		y = 0;
 
  		moving = false;
 
+ 		identify = {callback:render};
+
+ 		updateDiffs();
+
 		tick.add(identify);
  	}
 
- 	function events(){
+ 	function updateDiffs(){
+ 		wDiff = getWrapper()[0].offsetWidth - getContent()[0].offsetWidth;
+ 		hDiff = getWrapper()[0].offsetHeight - getContent()[0].offsetHeight;
+ 	}
 
- 		getWrapper().on('mousedown',function(e){
+ 	function events(){
+ 		getWrapper().on('mousedown touchstart',function(e){
  			setClient(e)
  			mouseDown(e);
 
- 			getWrapper().on('mousemove',function(e){
+ 			getWrapper().on('mousemove touchmove',function(e){
+ 				e.preventDefault();
 	 			setClient(e)
 	 			mouseMove(e);
 	 		});
 
  			getBody().on('mouseup',function(e){
- 				setClient(e)
  				mouseUp(e);
- 			})
+ 			});
+
+ 			getWrapper().on('touchend',function(e){
+ 				mouseUp(e);
+ 			});
  		});
  	}
 
  	function setClient(e){
- 		e.preventDefault();
-		clientX = e.clientX;
-		clientY = e.clientY;
+		clientX = e.originalEvent.touches ? e.originalEvent.touches[0].clientX : e.clientX;
+		clientY = e.originalEvent.touches ? e.originalEvent.touches[0].clientY : e.clientY;
  	}
 
  	function mouseDown(e){
- 		// console.log('mouseDown');
  		moving = true;
+
  		dragX.start(clientX);
+ 		dragY.start(clientY);
  	}
 
  	function mouseMove(e){
- 		// console.log('mouseMove');
- 		// itemX = drag.move(clientX);
- 		// itemY = 0; //d.y;
+
  	}
 
  	function mouseUp(e){
  		moving = false;
- 		// console.log('mouseUp');
- 		getWrapper().off('mousemove');
- 		getBody().off('mouseup');
+ 		getWrapper().off('mousemove touchmove');
+ 		getBody().off('mouseup touchup');
  	}
 
+ 	function isBelow(v, v2){
+ 		return Boolean(v > v2);
+ 	}
+
+ 	function isAbove(v, v2){
+ 		return Boolean(v < v2);
+ 	}
 
  	function render(){
 
  		if(moving){
 
- 			x = slideX.update( dragX.move(clientX) );
- 			y = slideY.update( dragY.move(clientY) );
+ 			x = slideX.move( dragX.move(clientX) );
+ 			y = slideY.move( dragY.move(clientY) );
 
  		}else{
 
- 			var isBelow = Boolean(x > 0);
- 			var isAbove = Boolean(x < (getWrapper()[0].offsetWidth - getSquare()[0].offsetWidth));
+ 			if(isBelow(x, 0)){
+ 				slideX.setEdge(0);
+ 			}else if(isAbove(x, wDiff)){
+ 				slideX.setEdge(wDiff);
+ 			}
 
- 			if(isBelow) slideX.setEdge(0);
- 			if(isAbove) slideX.setEdge(getWrapper()[0].offsetWidth - getSquare()[0].offsetWidth);
+			x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.edge() : slideX.idle();
+ 			dragX.update(x);
 
-			x = isBelow || isAbove ? slideX.edge() : slideX.idle();
 
- 			dragX.update(x); 
+ 			if(isBelow(y, 0)){
+ 				slideY.setEdge(0);
+ 			}else if(isAbove(y, hDiff)){
+ 				 slideY.setEdge(hDiff);
+ 			}
+
+			y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.edge() : slideY.idle();
+ 			dragY.update(y); 
  		}
 
- 		getSquare()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ 0 +"px,0px)";
+ 		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  	}
 
  	/*
  	* Public
  	*/
- 
+ 	
+ 	self.updateContent = updateDiffs;
+
  	/*
  	* Init
  	*/

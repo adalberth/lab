@@ -16,31 +16,31 @@
 	 	var opts = opts || {};
 	 	
 	 	var x;
-	 	var sx;
+	 	var s;
 
 	 	/*
 	 	* Private
 	 	*/
 	 	function init(){
 	 		x = 0;
-	 		sx = 0;
+	 		s = 0;
 	 	}
 
-	 	function start(vx){
-	 		sx = x - vx;
+	 	function start(v){
+	 		s = x - v;
 	 	}
 
-	 	function stop(vx){
-	 		update(vx);
+	 	function stop(v){
+	 		update(v);
 	 	}
 
-	 	function move(vx){
-	 		x =  sx + vx;
+	 	function move(v){
+	 		x =  s + v;
 	 		return x;
 	 	}
 
-	 	function update(vx){
-	 		x = vx;
+	 	function update(v){
+	 		x = v;
 	 	}
 
 
@@ -82,6 +82,7 @@ function controlConstructor(opts){
  	var getContent;
  	var getWrapper;
  	var getBody;
+ 	var getWindow;
 
  	var clientX;
  	var clientY;
@@ -117,6 +118,10 @@ function controlConstructor(opts){
  			return $('body');
  		});
 
+ 		getWindow = proxy(function(){
+ 			return $(window);
+ 		});
+
  		dragX = dragConstructor();
  		dragY = dragConstructor();
 
@@ -133,6 +138,7 @@ function controlConstructor(opts){
  		updateDiffs();
 
 		tick.add(identify);
+
  	}
 
  	function updateDiffs(){
@@ -141,21 +147,26 @@ function controlConstructor(opts){
  	}
 
  	function events(){
- 		getWrapper().on('mousedown touchstart',function(e){
+
+ 		getWindow().on('resize', function(){
+ 			updateDiffs();
+ 		});
+
+ 		getWrapper().on('mousedown touchstart', function(e){
  			setClient(e)
  			mouseDown(e);
 
- 			getWrapper().on('mousemove touchmove',function(e){
+ 			getWrapper().on('mousemove touchmove', function(e){
  				e.preventDefault();
 	 			setClient(e)
 	 			mouseMove(e);
 	 		});
 
- 			getBody().on('mouseup',function(e){
+ 			getBody().on('mouseup', function(e){
  				mouseUp(e);
  			});
 
- 			getWrapper().on('touchend',function(e){
+ 			getWrapper().on('touchend', function(e){
  				mouseUp(e);
  			});
  		});
@@ -174,7 +185,7 @@ function controlConstructor(opts){
  	}
 
  	function mouseMove(e){
-
+ 		// console.log("move",clientX,clientY);
  	}
 
  	function mouseUp(e){
@@ -220,6 +231,7 @@ function controlConstructor(opts){
  			dragY.update(y); 
  		}
 
+ 		// getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  	}
 
@@ -263,15 +275,15 @@ function slideConstructor(opts){
  
  	function init(){
  		t = 0;
- 		damp = 0.7;
- 		ease = 0.9;
  		x = 0;
+ 		k = 0.03;
  		acc = 0;
  		vel = 0;
- 		force = 0;
- 		k = 0.03;
+ 		damp = 0.7;
+ 		ease = 0.9;
  		mass = 1;
  		edge = 0;
+ 		force = 0;
  	}
  
  	function move(v){
@@ -352,8 +364,8 @@ function slideConstructor(opts){
               dom: dom,
               lowercase: pre,
               css: '-' + pre + '-',
-              // js: pre[0].toUpperCase() + pre.substr(1),
-              js: pre[0] + pre.substr(1),
+              js: pre[0].toUpperCase() + pre.substr(1), 
+              // js: pre[0] + pre.substr(1),
           };
 
         })();

@@ -19,15 +19,15 @@ function slideConstructor(opts){
  
  	function init(){
  		t = 0;
- 		damp = 0.7;
- 		ease = 0.9;
  		x = 0;
+ 		k = 0.03;
  		acc = 0;
  		vel = 0;
- 		force = 0;
- 		k = 0.03;
+ 		damp = 0.7;
+ 		ease = 0.9;
  		mass = 1;
  		edge = 0;
+ 		force = 0;
  	}
  
  	function move(v){

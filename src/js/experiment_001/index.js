@@ -14,6 +14,7 @@ function controlConstructor(opts){
  	var getContent;
  	var getWrapper;
  	var getBody;
+ 	var getWindow;
 
  	var clientX;
  	var clientY;
@@ -49,6 +50,10 @@ function controlConstructor(opts){
  			return $('body');
  		});
 
+ 		getWindow = proxy(function(){
+ 			return $(window);
+ 		});
+
  		dragX = dragConstructor();
  		dragY = dragConstructor();
 
@@ -65,6 +70,7 @@ function controlConstructor(opts){
  		updateDiffs();
 
 		tick.add(identify);
+
  	}
 
  	function updateDiffs(){
@@ -73,21 +79,26 @@ function controlConstructor(opts){
  	}
 
  	function events(){
- 		getWrapper().on('mousedown touchstart',function(e){
+
+ 		getWindow().on('resize', function(){
+ 			updateDiffs();
+ 		});
+
+ 		getWrapper().on('mousedown touchstart', function(e){
  			setClient(e)
  			mouseDown(e);
 
- 			getWrapper().on('mousemove touchmove',function(e){
+ 			getWrapper().on('mousemove touchmove', function(e){
  				e.preventDefault();
 	 			setClient(e)
 	 			mouseMove(e);
 	 		});
 
- 			getBody().on('mouseup',function(e){
+ 			getBody().on('mouseup', function(e){
  				mouseUp(e);
  			});
 
- 			getWrapper().on('touchend',function(e){
+ 			getWrapper().on('touchend', function(e){
  				mouseUp(e);
  			});
  		});
@@ -106,7 +117,7 @@ function controlConstructor(opts){
  	}
 
  	function mouseMove(e){
-
+ 		// console.log("move",clientX,clientY);
  	}
 
  	function mouseUp(e){
@@ -152,6 +163,7 @@ function controlConstructor(opts){
  			dragY.update(y); 
  		}
 
+ 		// getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  	}
 

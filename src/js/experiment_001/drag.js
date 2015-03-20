@@ -4,31 +4,31 @@
 	 	var opts = opts || {};
 	 	
 	 	var x;
-	 	var sx;
+	 	var s;
 
 	 	/*
 	 	* Private
 	 	*/
 	 	function init(){
 	 		x = 0;
-	 		sx = 0;
+	 		s = 0;
 	 	}
 
-	 	function start(vx){
-	 		sx = x - vx;
+	 	function start(v){
+	 		s = x - v;
 	 	}
 
-	 	function stop(vx){
-	 		update(vx);
+	 	function stop(v){
+	 		update(v);
 	 	}
 
-	 	function move(vx){
-	 		x =  sx + vx;
+	 	function move(v){
+	 		x =  s + v;
 	 		return x;
 	 	}
 
-	 	function update(vx){
-	 		x = vx;
+	 	function update(v){
+	 		x = v;
 	 	}
 
 

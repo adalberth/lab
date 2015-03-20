@@ -13,7 +13,6 @@ function controlConstructor(opts){
  	
  	var getContent;
  	var getWrapper;
- 	var getBody;
  	var getWindow;
 
  	var clientX;
@@ -46,10 +45,6 @@ function controlConstructor(opts){
  			return $('.wrapper');
  		});
 
- 		getBody = proxy(function(){
- 			return $('body');
- 		});
-
  		getWindow = proxy(function(){
  			return $(window);
  		});
@@ -70,6 +65,8 @@ function controlConstructor(opts){
  		updateDiffs();
 
 		tick.add(identify);
+
+		render();
 
  	}
 
@@ -94,7 +91,7 @@ function controlConstructor(opts){
 	 			mouseMove(e);
 	 		});
 
- 			getBody().on('mouseup', function(e){
+ 			getWindow().on('mouseup', function(e){
  				mouseUp(e);
  			});
 
@@ -102,6 +99,8 @@ function controlConstructor(opts){
  				mouseUp(e);
  			});
  		});
+
+ 		getWrapper().trigger('mousedown touchstart');
  	}
 
  	function setClient(e){
@@ -123,23 +122,25 @@ function controlConstructor(opts){
  	function mouseUp(e){
  		moving = false;
  		getWrapper().off('mousemove touchmove');
- 		getBody().off('mouseup touchup');
+ 		getWindow().off('mouseup touchup');
  	}
 
  	function isBelow(v, v2){
- 		return Boolean(v > v2);
+ 		return Boolean(v >= v2);
  	}
 
  	function isAbove(v, v2){
- 		return Boolean(v < v2);
+ 		return Boolean(v <= v2);
  	}
 
  	function render(){
 
  		if(moving){
 
- 			x = slideX.move( dragX.move(clientX) );
- 			y = slideY.move( dragY.move(clientY) );
+ 			x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.drag( dragX.move(clientX) ): slideX.move( dragX.move(clientX) );
+ 			;
+ 			y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.drag( dragY.move(clientY) ) : slideY.move( dragY.move(clientY) );
+
 
  		}else{
 
@@ -156,14 +157,13 @@ function controlConstructor(opts){
  			if(isBelow(y, 0)){
  				slideY.setEdge(0);
  			}else if(isAbove(y, hDiff)){
- 				 slideY.setEdge(hDiff);
+ 				slideY.setEdge(hDiff);
  			}
 
 			y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.edge() : slideY.idle();
  			dragY.update(y); 
  		}
 
- 		// getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  	}
 

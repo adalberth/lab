@@ -81,7 +81,6 @@ function controlConstructor(opts){
  	
  	var getContent;
  	var getWrapper;
- 	var getBody;
  	var getWindow;
 
  	var clientX;
@@ -114,10 +113,6 @@ function controlConstructor(opts){
  			return $('.wrapper');
  		});
 
- 		getBody = proxy(function(){
- 			return $('body');
- 		});
-
  		getWindow = proxy(function(){
  			return $(window);
  		});
@@ -138,6 +133,8 @@ function controlConstructor(opts){
  		updateDiffs();
 
 		tick.add(identify);
+
+		render();
 
  	}
 
@@ -162,7 +159,7 @@ function controlConstructor(opts){
 	 			mouseMove(e);
 	 		});
 
- 			getBody().on('mouseup', function(e){
+ 			getWindow().on('mouseup', function(e){
  				mouseUp(e);
  			});
 
@@ -170,6 +167,8 @@ function controlConstructor(opts){
  				mouseUp(e);
  			});
  		});
+
+ 		getWrapper().trigger('mousedown touchstart');
  	}
 
  	function setClient(e){
@@ -191,23 +190,25 @@ function controlConstructor(opts){
  	function mouseUp(e){
  		moving = false;
  		getWrapper().off('mousemove touchmove');
- 		getBody().off('mouseup touchup');
+ 		getWindow().off('mouseup touchup');
  	}
 
  	function isBelow(v, v2){
- 		return Boolean(v > v2);
+ 		return Boolean(v >= v2);
  	}
 
  	function isAbove(v, v2){
- 		return Boolean(v < v2);
+ 		return Boolean(v <= v2);
  	}
 
  	function render(){
 
  		if(moving){
 
- 			x = slideX.move( dragX.move(clientX) );
- 			y = slideY.move( dragY.move(clientY) );
+ 			x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.drag( dragX.move(clientX) ): slideX.move( dragX.move(clientX) );
+ 			;
+ 			y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.drag( dragY.move(clientY) ) : slideY.move( dragY.move(clientY) );
+
 
  		}else{
 
@@ -224,14 +225,13 @@ function controlConstructor(opts){
  			if(isBelow(y, 0)){
  				slideY.setEdge(0);
  			}else if(isAbove(y, hDiff)){
- 				 slideY.setEdge(hDiff);
+ 				slideY.setEdge(hDiff);
  			}
 
 			y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.edge() : slideY.idle();
  			dragY.update(y); 
  		}
 
- 		// getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  	}
 
@@ -253,7 +253,9 @@ function controlConstructor(opts){
 
  module.exports = controlConstructor;
 
-},{"../stupid/prefix":5,"../stupid/proxy":6,"../stupid/tick":8,"./drag":2,"./slide":4}],4:[function(require,module,exports){
+},{"../stupid/prefix":6,"../stupid/proxy":7,"../stupid/tick":9,"./drag":2,"./slide":4}],4:[function(require,module,exports){
+var onceConstructor = require('../stupid/once');
+
 function slideConstructor(opts){
  	var self = {};
  	var opts = opts || {};
@@ -264,10 +266,18 @@ function slideConstructor(opts){
  	var t;
  	var x;
  	var k;
+ 	var tx;
  	var mass;
  	var damp;
  	var ease;
  	var edge;
+
+ 	var dx;
+ 	var di;
+	var dv;
+	var dd;
+
+ 	var once;
 
  	/*
  	* Private
@@ -280,10 +290,15 @@ function slideConstructor(opts){
  		acc = 0;
  		vel = 0;
  		damp = 0.7;
- 		ease = 0.9;
+ 		ease = 0.7;
  		mass = 1;
  		edge = 0;
  		force = 0;
+
+ 		dx = false;
+ 		di = 0;
+ 		dv = 0;
+ 		dd = 0.7;
  	}
  
  	function move(v){
@@ -294,12 +309,26 @@ function slideConstructor(opts){
  		return v;
  	}
 
+ 	function drag(v){
+ 		if(!dx) dx = v;
+
+ 		di = v - dx;
+ 		dv = v - (di * dd);
+ 		force = dv - t;
+ 		t = dv;
+ 		x = dv;
+
+ 		return x;
+ 	}
+
  	function idle(){
 		acc = force;     
 		vel = damp * (vel + acc); 
 		x += vel;
 		t = x;
 		force *= ease;
+
+		reset();
 
 		return x;
  	}
@@ -315,6 +344,8 @@ function slideConstructor(opts){
 	    acc = force / mass;     
 	    vel = damp * (vel + acc);        
 	    x += vel;
+
+	    reset();
 	}
 
 	function setEdge(v){
@@ -325,11 +356,16 @@ function slideConstructor(opts){
  		return x;
  	}
 
+ 	function reset(){
+ 		dx = false;
+ 	}
+
  	/*
  	* Public
  	*/
  	
  	self.move = move;
+ 	self.drag = drag;
  	self.idle = idle;
  	self.edge = edge;
  	self.setEdge = setEdge;
@@ -345,7 +381,30 @@ function slideConstructor(opts){
  }
  
  module.exports = slideConstructor;
-},{}],5:[function(require,module,exports){
+},{"../stupid/once":5}],5:[function(require,module,exports){
+(function(){
+	function onceConstructor(inFunc, outFunc){
+ 		var boo = false;
+ 		var inFunc = inFunc || function(){};
+ 		var outFunc = outFunc || function(){};
+
+ 		return {
+ 			in:function() {
+ 				if(boo) return;
+ 				inFunc();
+ 				boo = true;
+ 			},
+ 			out:function() {
+ 				if(!boo) return;
+ 				outFunc();
+ 				boo = false;
+ 			}
+ 		}
+ 	}
+
+ 	module.exports = onceConstructor;
+}())
+},{}],6:[function(require,module,exports){
 (function() {
 
     var createPrefix = function() {
@@ -374,7 +433,7 @@ function slideConstructor(opts){
     module.exports = createPrefix();  
 
 }())
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function(){
 	function proxyConstructor(func){
 		var element = null;
@@ -387,7 +446,7 @@ function slideConstructor(opts){
 
 	module.exports = proxyConstructor;
 }())
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function(){
     /*
     * CREATE SINGLETON FUNCTION
@@ -421,7 +480,7 @@ function slideConstructor(opts){
 }())
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function(){
 
     var singletonConstructor = require('./singleton');
@@ -517,4 +576,4 @@ function slideConstructor(opts){
     module.exports = singletonConstructor(tickConstructor);
 
 }())
-},{"./singleton":7}]},{},[1]);
+},{"./singleton":8}]},{},[1]);

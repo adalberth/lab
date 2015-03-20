@@ -1,15 +1,22 @@
 #experiment_001 .wrapper {
-  width: 100%;
+  max-width: 400px;
+  max-height: 300px;
   height: 100%;
+  width: 100%;
   position: absolute;
   top: 0px;
   left: 0px;
   background-color: rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate3d(-50%, -50%, 0px);
+          transform: translate3d(-50%, -50%, 0px);
 }
 #experiment_001 .square {
   background: -webkit-linear-gradient(45deg, red, green, blue, yellow, brown);
   background: linear-gradient(45deg, red, green, blue, yellow, brown);
   width: 200%;
   height: 200%;
+  pointer-events: none;
 }

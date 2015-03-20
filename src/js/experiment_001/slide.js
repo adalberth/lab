@@ -1,3 +1,5 @@
+var onceConstructor = require('../stupid/once');
+
 function slideConstructor(opts){
  	var self = {};
  	var opts = opts || {};
@@ -8,10 +10,18 @@ function slideConstructor(opts){
  	var t;
  	var x;
  	var k;
+ 	var tx;
  	var mass;
  	var damp;
  	var ease;
  	var edge;
+
+ 	var dx;
+ 	var di;
+	var dv;
+	var dd;
+
+ 	var once;
 
  	/*
  	* Private
@@ -24,10 +34,15 @@ function slideConstructor(opts){
  		acc = 0;
  		vel = 0;
  		damp = 0.7;
- 		ease = 0.9;
+ 		ease = 0.7;
  		mass = 1;
  		edge = 0;
  		force = 0;
+
+ 		dx = false;
+ 		di = 0;
+ 		dv = 0;
+ 		dd = 0.7;
  	}
  
  	function move(v){
@@ -38,12 +53,26 @@ function slideConstructor(opts){
  		return v;
  	}
 
+ 	function drag(v){
+ 		if(!dx) dx = v;
+
+ 		di = v - dx;
+ 		dv = v - (di * dd);
+ 		force = dv - t;
+ 		t = dv;
+ 		x = dv;
+
+ 		return x;
+ 	}
+
  	function idle(){
 		acc = force;     
 		vel = damp * (vel + acc); 
 		x += vel;
 		t = x;
 		force *= ease;
+
+		reset();
 
 		return x;
  	}
@@ -59,6 +88,8 @@ function slideConstructor(opts){
 	    acc = force / mass;     
 	    vel = damp * (vel + acc);        
 	    x += vel;
+
+	    reset();
 	}
 
 	function setEdge(v){
@@ -69,11 +100,16 @@ function slideConstructor(opts){
  		return x;
  	}
 
+ 	function reset(){
+ 		dx = false;
+ 	}
+
  	/*
  	* Public
  	*/
  	
  	self.move = move;
+ 	self.drag = drag;
  	self.idle = idle;
  	self.edge = edge;
  	self.setEdge = setEdge;

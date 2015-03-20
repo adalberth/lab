@@ -1,19 +1,29 @@
 #experiment_001{
+	$w:400px;
+	$h:300px;
 
 	.wrapper{
-		width: 100%;
+		max-width: $w;
+		max-height: $h;
 		height: 100%;
+		width: 100%;
 		position: absolute;
 		top: 0px;
 		left: 0px;
 		background-color: rgba(0,0,0,0.1);
+
 		overflow: hidden;
+
+		top: 50%;
+		left: 50%;
+		transform: translate3d(-50%, -50%, 0px);
 	}
 
 	.square{
-		// background-color: rgba(0,0,0,0.2);
 		background: linear-gradient(45deg, red, green, blue,yellow,brown);
+		// opacity: 0.5;
 		width: 200%;
 		height: 200%;
+		pointer-events:none; 
 	}
 }

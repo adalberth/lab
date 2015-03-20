@@ -304,7 +304,7 @@ function slideConstructor(opts){
  		ease = 0.8;
  		mass = 1;
  		edge = 0;
- 		
+
  		force = 0;
  		mForce = 40;
 
@@ -370,7 +370,6 @@ function slideConstructor(opts){
  	}
 
  	function maxForce(f){
- 		console.log(f);
  		return Math.abs(f) > mForce ? f < 0 ? mForce * -1 : mForce : f;
  	}
 

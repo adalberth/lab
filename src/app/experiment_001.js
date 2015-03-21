@@ -1,10 +1,10 @@
 (function($){
 	
-	var controlConstructor = require('../js/experiment_001');
+	var scrollBoxConstructor = require('../js/experiment_001/scroll-box');
 	var control;
 
 	$(document).ready(function(){
-		control = controlConstructor();
+		scrollBox = scrollBoxConstructor();
 	});	 
 
 }(jQuery))

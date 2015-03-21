@@ -43,7 +43,7 @@ function slideConstructor(opts){
  		edge = 0;
 
  		force = 0;
- 		mForce = 40;
+ 		mForce = 30;
 
  		dx = false;
  		di = 0;
@@ -64,11 +64,12 @@ function slideConstructor(opts){
 
  		di = v - dx;
  		dv = v - (di * dd);
- 		force = dv - t;
- 		t = dv;
- 		x = dv;
 
- 		return x;
+ 		force = v - t;
+ 		t = v;
+ 		x = dv;  
+
+ 		return dv;
  	}
 
  	function idle(){
@@ -98,7 +99,7 @@ function slideConstructor(opts){
 		edge = v;
 	}
 
- 	function value(){
+ 	function value(){ 
  		return x;
  	}
 

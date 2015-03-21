@@ -1,15 +1,15 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function($){
 	
-	var controlConstructor = require('../js/experiment_001');
+	var scrollBoxConstructor = require('../js/experiment_001/scroll-box');
 	var control;
 
 	$(document).ready(function(){
-		control = controlConstructor();
+		scrollBox = scrollBoxConstructor();
 	});	 
 
 }(jQuery))
-},{"../js/experiment_001":3}],2:[function(require,module,exports){
+},{"../js/experiment_001/scroll-box":3}],2:[function(require,module,exports){
 (function(){
 	function dragConstructor(opts){
 	 	var self = {};
@@ -72,7 +72,7 @@ var dragConstructor = require('./drag');
 var slideConstructor = require('./slide');
 var tickSingleton = require('../stupid/tick');
 
-function controlConstructor(opts){
+function scrollBoxConstructor(opts){
  	var self = {};
  	var opts = opts || {};
  	
@@ -258,7 +258,7 @@ function controlConstructor(opts){
  	return self;
  }
 
- module.exports = controlConstructor;
+ module.exports = scrollBoxConstructor;
 
 },{"../stupid/prefix":6,"../stupid/proxy":7,"../stupid/tick":9,"./drag":2,"./slide":4}],4:[function(require,module,exports){
 var onceConstructor = require('../stupid/once');
@@ -306,7 +306,7 @@ function slideConstructor(opts){
  		edge = 0;
 
  		force = 0;
- 		mForce = 40;
+ 		mForce = 30;
 
  		dx = false;
  		di = 0;
@@ -327,11 +327,12 @@ function slideConstructor(opts){
 
  		di = v - dx;
  		dv = v - (di * dd);
- 		force = dv - t;
- 		t = dv;
- 		x = dv;
 
- 		return x;
+ 		force = v - t;
+ 		t = v;
+ 		x = dv;  
+
+ 		return dv;
  	}
 
  	function idle(){
@@ -361,7 +362,7 @@ function slideConstructor(opts){
 		edge = v;
 	}
 
- 	function value(){
+ 	function value(){ 
  		return x;
  	}
 

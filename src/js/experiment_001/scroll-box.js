@@ -4,7 +4,7 @@ var dragConstructor = require('./drag');
 var slideConstructor = require('./slide');
 var tickSingleton = require('../stupid/tick');
 
-function controlConstructor(opts){
+function scrollBoxConstructor(opts){
  	var self = {};
  	var opts = opts || {};
  	
@@ -190,4 +190,4 @@ function controlConstructor(opts){
  	return self;
  }
 
- module.exports = controlConstructor;
+ module.exports = scrollBoxConstructor;

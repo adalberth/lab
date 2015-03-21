@@ -20,8 +20,6 @@ function slideConstructor(opts){
  	var edge;
 
  	var dx;
- 	var di;
-	var dv;
 	var dd;
 
  	var once;
@@ -34,21 +32,21 @@ function slideConstructor(opts){
  		t = 0;
  		x = 0;
 
- 		k = 0.03;
- 		acc = 0;
- 		vel = 0;
- 		damp = 0.7;
+ 		k = 0.1;
+ 		damp = 0.6;
  		ease = 0.8;
  		mass = 1;
+
+ 		acc = 0;
+ 		vel = 0;
+ 		
  		edge = 0;
 
  		force = 0;
  		mForce = 30;
 
  		dx = false;
- 		di = 0;
- 		dv = 0;
- 		dd = 0.8;
+ 		dd = 0.6;
  	}
  
  	function move(v){
@@ -62,14 +60,9 @@ function slideConstructor(opts){
  	function drag(v){
  		if(!dx) dx = v;
 
- 		di = v - dx;
- 		dv = v - (di * dd);
+ 		x = v - ((v - dx) * dd);
 
- 		force = v - t;
- 		t = v;
- 		x = dv;  
-
- 		return dv;
+ 		return x;
  	}
 
  	function idle(){
@@ -77,6 +70,7 @@ function slideConstructor(opts){
 		vel = damp * (vel + acc); 
 		x += vel;
 		t = x;
+
 		force *= ease;
 
 		reset();

@@ -264,9 +264,7 @@ function scrollBoxConstructor(opts){
 
  module.exports = scrollBoxConstructor;
 
-},{"../stupid/prefix":6,"../stupid/proxy":7,"../stupid/tick":9,"./drag":2,"./slide":4}],4:[function(require,module,exports){
-var onceConstructor = require('../stupid/once');
-
+},{"../stupid/prefix":5,"../stupid/proxy":6,"../stupid/tick":8,"./drag":2,"./slide":4}],4:[function(require,module,exports){
 function slideConstructor(opts){
  	var self = {};
  	var opts = opts || {};
@@ -280,7 +278,6 @@ function slideConstructor(opts){
  	var t;
  	var x;
  	var k;
- 	var tx;
  	var mass;
  	var damp;
  	var ease;
@@ -289,31 +286,25 @@ function slideConstructor(opts){
  	var dx;
 	var dd;
 
- 	var once;
-
  	/*
  	* Private
  	*/
  
  	function init(){
+ 		k = opts.k || 0.1;
+ 		damp = opts.damp || 0.6;
+ 		ease = opts.ease || 0.9;
+ 		mass = opts.mase || 1;
+ 		mForce = opts.mForce || 30;
+ 		dd = opts.dd || 0.6;
+
  		t = 0;
  		x = 0;
-
- 		k = 0.1;
- 		damp = 0.6;
- 		ease = 0.8;
- 		mass = 1;
-
  		acc = 0;
  		vel = 0;
- 		
  		edge = 0;
-
  		force = 0;
- 		mForce = 30;
-
  		dx = false;
- 		dd = 0.6;
  	}
  
  	function move(v){
@@ -395,30 +386,7 @@ function slideConstructor(opts){
  }
  
  module.exports = slideConstructor;
-},{"../stupid/once":5}],5:[function(require,module,exports){
-(function(){
-	function onceConstructor(inFunc, outFunc){
- 		var boo = false;
- 		var inFunc = inFunc || function(){};
- 		var outFunc = outFunc || function(){};
-
- 		return {
- 			in:function() {
- 				if(boo) return;
- 				inFunc();
- 				boo = true;
- 			},
- 			out:function() {
- 				if(!boo) return;
- 				outFunc();
- 				boo = false;
- 			}
- 		}
- 	}
-
- 	module.exports = onceConstructor;
-}())
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function() {
 
      /**
@@ -467,7 +435,7 @@ function slideConstructor(opts){
     module.exports = createPrefix();  
 
 }())
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function(){
 	function proxyConstructor(func){
 		var element = null;
@@ -480,7 +448,7 @@ function slideConstructor(opts){
 
 	module.exports = proxyConstructor;
 }())
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function(){
     /*
     * CREATE SINGLETON FUNCTION
@@ -514,7 +482,7 @@ function slideConstructor(opts){
 }())
 
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function(){
 
     var singletonConstructor = require('./singleton');
@@ -610,4 +578,4 @@ function slideConstructor(opts){
     module.exports = singletonConstructor(tickConstructor);
 
 }())
-},{"./singleton":8}]},{},[1]);
+},{"./singleton":7}]},{},[1]);

@@ -1,5 +1,3 @@
-var onceConstructor = require('../stupid/once');
-
 function slideConstructor(opts){
  	var self = {};
  	var opts = opts || {};
@@ -13,7 +11,6 @@ function slideConstructor(opts){
  	var t;
  	var x;
  	var k;
- 	var tx;
  	var mass;
  	var damp;
  	var ease;
@@ -22,31 +19,25 @@ function slideConstructor(opts){
  	var dx;
 	var dd;
 
- 	var once;
-
  	/*
  	* Private
  	*/
  
  	function init(){
+ 		k = opts.k || 0.1;
+ 		damp = opts.damp || 0.6;
+ 		ease = opts.ease || 0.9;
+ 		mass = opts.mase || 1;
+ 		mForce = opts.mForce || 30;
+ 		dd = opts.dd || 0.6;
+
  		t = 0;
  		x = 0;
-
- 		k = 0.1;
- 		damp = 0.6;
- 		ease = 0.8;
- 		mass = 1;
-
  		acc = 0;
  		vel = 0;
- 		
  		edge = 0;
-
  		force = 0;
- 		mForce = 30;
-
  		dx = false;
- 		dd = 0.6;
  	}
  
  	function move(v){

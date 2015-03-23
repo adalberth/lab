@@ -303,7 +303,7 @@ function slideConstructor(opts){
  		ease = opts.ease || 0.9;
  		mass = opts.mase || 1;
  		mForce = opts.mForce || 30;
- 		dragForce = opts.dragForce || 0.5;
+ 		dragForce = opts.dragForce || 0.6;
 
  		t = 0;
  		x = 0;

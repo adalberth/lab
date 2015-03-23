@@ -135,27 +135,31 @@ function scrollBoxConstructor(opts){
  	}
 
 
- 	function calcMove(){
+ 	function move(){
  		x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.drag( dragX.move(clientX) ) : slideX.move( dragX.move(clientX) );
 		y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.drag( dragY.move(clientY) ) : slideY.move( dragY.move(clientY) );
  	}
 
  	function idle(){
 
- 		if(isBelow(x, 0)){
+ 		if(isBelow(x, 0) && wDiff < 0){
 			slideX.setEdge(0);
-		}else if(isAbove(x, wDiff)){
+		}else if(isAbove(x, wDiff) && wDiff < 0){
 			slideX.setEdge(wDiff);
+		}else if(wDiff > 0){
+			slideX.setEdge(wDiff / 2);
 		}
 
 		x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.edge() : slideX.idle();
 
 		dragX.update(x);
 
-		if(isBelow(y, 0)){
+		if(isBelow(y, 0) && hDiff < 0){
 			slideY.setEdge(0);
-		}else if(isAbove(y, hDiff)){
+		}else if(isAbove(y, hDiff) && hDiff < 0){
 			slideY.setEdge(hDiff);
+		}else if(hDiff > 0){
+			slideY.setEdge(hDiff / 2);
 		}
 
 		y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.edge() : slideY.idle();
@@ -166,7 +170,7 @@ function scrollBoxConstructor(opts){
  	function render(){
 
  		if(moving){
- 			calcMove();
+ 			move();
  		}else{
  			idle();
  		}

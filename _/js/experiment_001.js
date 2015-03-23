@@ -203,27 +203,31 @@ function scrollBoxConstructor(opts){
  	}
 
 
- 	function calcMove(){
+ 	function move(){
  		x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.drag( dragX.move(clientX) ) : slideX.move( dragX.move(clientX) );
 		y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.drag( dragY.move(clientY) ) : slideY.move( dragY.move(clientY) );
  	}
 
  	function idle(){
 
- 		if(isBelow(x, 0)){
+ 		if(isBelow(x, 0) && wDiff < 0){
 			slideX.setEdge(0);
-		}else if(isAbove(x, wDiff)){
+		}else if(isAbove(x, wDiff) && wDiff < 0){
 			slideX.setEdge(wDiff);
+		}else if(wDiff > 0){
+			slideX.setEdge(wDiff / 2);
 		}
 
 		x = isBelow(x, 0) || isAbove(x, wDiff) ? slideX.edge() : slideX.idle();
 
 		dragX.update(x);
 
-		if(isBelow(y, 0)){
+		if(isBelow(y, 0) && hDiff < 0){
 			slideY.setEdge(0);
-		}else if(isAbove(y, hDiff)){
+		}else if(isAbove(y, hDiff) && hDiff < 0){
 			slideY.setEdge(hDiff);
+		}else if(hDiff > 0){
+			slideY.setEdge(hDiff / 2);
 		}
 
 		y = isBelow(y, 0) || isAbove(y, hDiff) ? slideY.edge() : slideY.idle();
@@ -234,7 +238,7 @@ function scrollBoxConstructor(opts){
  	function render(){
 
  		if(moving){
- 			calcMove();
+ 			move();
  		}else{
  			idle();
  		}
@@ -316,6 +320,8 @@ function slideConstructor(opts){
  		force = maxForce(v - t);
  		t = v;
  		x = v;
+ 		
+ 		reset();
 
  		return v;
  	}
@@ -415,24 +421,44 @@ function slideConstructor(opts){
 },{}],6:[function(require,module,exports){
 (function() {
 
+     /**
+     * Returns proper vendor prefix name
+     */
+    function getVendorPrefix () {
+    
+        var ua = navigator.userAgent.toLowerCase(),
+            match = /opera/.exec(ua) || /msie/.exec(ua) || /firefox/.exec(ua) || /(chrome|safari)/.exec(ua),
+            vendors = {
+                opera: 'O',
+                chrome: 'webkit',
+                safari: 'webkit',
+                firefox: 'Moz',
+                msie: 'ms'
+            };
+        
+        return vendors[match[0]];
+    }
+
     var createPrefix = function() {
+
         return (function(){
 
-          var styles = window.getComputedStyle(document.documentElement, ''),
+          // var styles = window.getComputedStyle(document.documentElement, ''),
 
-              pre = (Array.prototype.slice
-                  .call(styles)
-                  .join('')
-                  .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
-              )[1],
+          //     pre = (Array.prototype.slice
+          //         .call(styles)
+          //         .join('')
+          //         .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+          //     )[1],
 
-              dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+          //     dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+
           return {
-              dom: dom,
-              lowercase: pre,
-              css: '-' + pre + '-',
-              js: pre[0].toUpperCase() + pre.substr(1), 
-              // js: pre[0] + pre.substr(1),
+              // dom: dom,
+              // lowercase: pre,
+              // css: '-' + pre + '-',
+              // js: pre[0].toUpperCase() + pre.substr(1), 
+              js: getVendorPrefix(),
           };
 
         })();

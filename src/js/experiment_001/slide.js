@@ -53,6 +53,8 @@ function slideConstructor(opts){
  		force = maxForce(v - t);
  		t = v;
  		x = v;
+ 		
+ 		reset();
 
  		return v;
  	}

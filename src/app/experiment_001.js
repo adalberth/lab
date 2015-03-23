@@ -1,6 +1,6 @@
 (function($){
 	
-	var scrollBoxConstructor = require('../js/experiment_001/scroll-box');
+	var scrollBoxConstructor = require('../js/experiment_001/scrollBox/scrollbox');
 	var control;
 
 	$(document).ready(function(){

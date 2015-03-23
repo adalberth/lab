@@ -1,8 +1,14 @@
-var prefix = require('../stupid/prefix');
-var proxy = require('../stupid/proxy');
+var prefix = require('./stupid/prefix');
+var proxy = require('./stupid/proxy');
 var dragConstructor = require('./drag');
 var slideConstructor = require('./slide');
-var tickSingleton = require('../stupid/tick');
+var tickSingleton = require('./stupid/tick');
+
+
+/*
+* ScrollBox
+* v1.0.0
+*/
 
 function scrollBoxConstructor(opts){
  	var self = {};
@@ -21,7 +27,7 @@ function scrollBoxConstructor(opts){
  	var x;
  	var y;
 
- 	var dragX;
+ 	var dragX; 
  	var dragY;
 
  	var slideX;

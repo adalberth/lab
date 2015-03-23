@@ -1,3 +1,8 @@
+/*
+* Slide
+* v1.0.0
+*/
+
 function slideConstructor(opts){
  	var self = {};
  	var opts = opts || {};
@@ -42,6 +47,7 @@ function slideConstructor(opts){
  		force = maxForce(v - t);
  		x = v;
  		t = v;
+ 		
  		return v;
  	}
 

@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function($){
 	
-	var scrollBoxConstructor = require('../js/experiment_001/scroll-box');
+	var scrollBoxConstructor = require('../js/experiment_001/scrollBox/scrollbox');
 	var control;
 
 	$(document).ready(function(){
@@ -9,8 +9,14 @@
 	});	 
 
 }(jQuery))
-},{"../js/experiment_001/scroll-box":3}],2:[function(require,module,exports){
+},{"../js/experiment_001/scrollBox/scrollbox":3}],2:[function(require,module,exports){
 (function(){
+
+	/*
+    * Drag
+    * v1.0.0
+    */
+    
 	function dragConstructor(opts){
 	 	var self = {};
 	 	var opts = opts || {};
@@ -66,11 +72,17 @@
 	module.exports = dragConstructor;
 }())
 },{}],3:[function(require,module,exports){
-var prefix = require('../stupid/prefix');
-var proxy = require('../stupid/proxy');
+var prefix = require('./stupid/prefix');
+var proxy = require('./stupid/proxy');
 var dragConstructor = require('./drag');
 var slideConstructor = require('./slide');
-var tickSingleton = require('../stupid/tick');
+var tickSingleton = require('./stupid/tick');
+
+
+/*
+* ScrollBox
+* v1.0.0
+*/
 
 function scrollBoxConstructor(opts){
  	var self = {};
@@ -89,7 +101,7 @@ function scrollBoxConstructor(opts){
  	var x;
  	var y;
 
- 	var dragX;
+ 	var dragX; 
  	var dragY;
 
  	var slideX;
@@ -272,7 +284,12 @@ function scrollBoxConstructor(opts){
 
  module.exports = scrollBoxConstructor;
 
-},{"../stupid/prefix":5,"../stupid/proxy":6,"../stupid/tick":8,"./drag":2,"./slide":4}],4:[function(require,module,exports){
+},{"./drag":2,"./slide":4,"./stupid/prefix":5,"./stupid/proxy":6,"./stupid/tick":8}],4:[function(require,module,exports){
+/*
+* Slide
+* v1.0.0
+*/
+
 function slideConstructor(opts){
  	var self = {};
  	var opts = opts || {};
@@ -317,6 +334,7 @@ function slideConstructor(opts){
  		force = maxForce(v - t);
  		x = v;
  		t = v;
+ 		
  		return v;
  	}
 
@@ -388,43 +406,31 @@ function slideConstructor(opts){
 },{}],5:[function(require,module,exports){
 (function() {
 
-     /**
-     * Returns proper vendor prefix name
-     */
-    function getVendorPrefix () {
-    
-        var ua = navigator.userAgent.toLowerCase(),
-            match = /opera/.exec(ua) || /msie/.exec(ua) || /firefox/.exec(ua) || /(chrome|safari)/.exec(ua),
-            vendors = {
-                opera: 'O',
-                chrome: 'webkit',
-                safari: 'webkit',
-                firefox: 'Moz',
-                msie: 'ms'
-            };
-        
-        return vendors[match[0]];
-    }
+    /*
+    * Prefix
+    * v1.0.0
+    */
 
     var createPrefix = function() {
 
         return (function(){
 
-          // var styles = window.getComputedStyle(document.documentElement, ''),
+          function getVendorPrefix () {
 
-          //     pre = (Array.prototype.slice
-          //         .call(styles)
-          //         .join('')
-          //         .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
-          //     )[1],
-
-          //     dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+              var ua = navigator.userAgent.toLowerCase(),
+                  match = /opera/.exec(ua) || /msie/.exec(ua) || /firefox/.exec(ua) || /(chrome|safari)/.exec(ua),
+                  vendors = {
+                      opera: 'O',
+                      chrome: 'webkit',
+                      safari: 'webkit',
+                      firefox: 'Moz',
+                      msie: 'ms'
+                  };
+              
+              return vendors[match[0]];
+          } 
 
           return {
-              // dom: dom,
-              // lowercase: pre,
-              // css: '-' + pre + '-',
-              // js: pre[0].toUpperCase() + pre.substr(1), 
               js: getVendorPrefix(),
           };
 
@@ -436,6 +442,12 @@ function slideConstructor(opts){
 }())
 },{}],6:[function(require,module,exports){
 (function(){
+
+	/*
+    * Proxy
+    * v1.0.0
+    */
+
 	function proxyConstructor(func){
 		var element = null;
 
@@ -454,6 +466,8 @@ function slideConstructor(opts){
     *
     * Creates a singleton out of a function
     * Get the function by using foo.getInstance();
+    *
+    * v1.0.0
     */
 
     function singletonConstructor(createObject){
@@ -486,10 +500,10 @@ function slideConstructor(opts){
 
     var singletonConstructor = require('./singleton');
 
- 
-
     /*
      * Tick
+     *
+     * v1.0.0
      */
 
     function tickConstructor() {

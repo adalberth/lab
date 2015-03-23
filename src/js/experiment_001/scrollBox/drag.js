@@ -1,4 +1,10 @@
 (function(){
+
+	/*
+    * Drag
+    * v1.0.0
+    */
+    
 	function dragConstructor(opts){
 	 	var self = {};
 	 	var opts = opts || {};

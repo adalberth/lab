@@ -16,8 +16,7 @@ function slideConstructor(opts){
  	var ease;
  	var edge;
 
- 	var dx;
-	var dd;
+	var dragForce;
 
  	/*
  	* Private
@@ -29,7 +28,7 @@ function slideConstructor(opts){
  		ease = opts.ease || 0.9;
  		mass = opts.mase || 1;
  		mForce = opts.mForce || 30;
- 		dd = opts.dd || 0.5;
+ 		dragForce = opts.dragForce || 0.5;
 
  		t = 0;
  		x = 0;
@@ -37,18 +36,17 @@ function slideConstructor(opts){
  		vel = 0;
  		edge = 0;
  		force = 0;
- 		dx = false;
  	}
  
  	function move(v){
  		force = maxForce(v - t);
- 		t = v;
  		x = v;
+ 		t = v;
  		return v;
  	}
 
  	function drag(v){
- 		x = v - ((v - t) * dd);
+ 		x = v - ((v - t) * dragForce);
 
  		return x;
  	}

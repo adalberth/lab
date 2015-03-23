@@ -64,6 +64,8 @@ function scrollBoxConstructor(opts){
 
  		updateDiffs();
 
+ 		center();
+
 		tick.add(identify);
 
 		render();
@@ -108,6 +110,13 @@ function scrollBoxConstructor(opts){
 		clientY = e.originalEvent.touches ? e.originalEvent.touches[0].clientY : e.clientY;
  	}
 
+ 	function center(){
+ 		x = wDiff / 2;
+ 		y = hDiff / 2;
+ 		slideX.setValue(x);
+ 		slideY.setValue(y);
+ 	}
+
  	function mouseDown(e){
  		moving = true;
 
@@ -141,7 +150,6 @@ function scrollBoxConstructor(opts){
  	}
 
  	function idle(){
-
  		if(isBelow(x, 0) && wDiff < 0){
 			slideX.setEdge(0);
 		}else if(isAbove(x, wDiff) && wDiff < 0){
@@ -174,6 +182,8 @@ function scrollBoxConstructor(opts){
  		}else{
  			idle();
  		}
+
+ 		// console.log(x,y);
 
  		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  	}

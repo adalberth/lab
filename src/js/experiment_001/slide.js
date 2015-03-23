@@ -90,6 +90,10 @@ function slideConstructor(opts){
  		return x;
  	}
 
+ 	function setValue(v){
+ 		x = v;
+ 	}
+
  	function reset(){
  		dx = false;
  	}
@@ -108,6 +112,7 @@ function slideConstructor(opts){
  	self.edge = edge;
  	self.setEdge = setEdge;
  	self.value = value;
+ 	self.setValue = setValue;
 
  	/*
  	* Init

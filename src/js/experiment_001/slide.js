@@ -29,7 +29,7 @@ function slideConstructor(opts){
  		ease = opts.ease || 0.9;
  		mass = opts.mase || 1;
  		mForce = opts.mForce || 30;
- 		dd = opts.dd || 0.6;
+ 		dd = opts.dd || 0.5;
 
  		t = 0;
  		x = 0;
@@ -44,16 +44,11 @@ function slideConstructor(opts){
  		force = maxForce(v - t);
  		t = v;
  		x = v;
- 		
- 		reset();
-
  		return v;
  	}
 
  	function drag(v){
- 		if(!dx) dx = v;
-
- 		x = v - ((v - dx) * dd);
+ 		x = v - ((v - t) * dd);
 
  		return x;
  	}
@@ -66,8 +61,6 @@ function slideConstructor(opts){
 
 		force *= ease;
 
-		reset();
-
 		return x;
  	}
 
@@ -76,8 +69,7 @@ function slideConstructor(opts){
 	    acc = force / mass;     
 	    vel = damp * (vel + acc);        
 	    x += vel;
-
-	    reset();
+	    t = x;
 
 		return x;
  	}
@@ -92,10 +84,6 @@ function slideConstructor(opts){
 
  	function setValue(v){
  		x = v;
- 	}
-
- 	function reset(){
- 		dx = false;
  	}
 
  	function maxForce(f){

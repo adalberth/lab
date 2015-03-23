@@ -52,7 +52,7 @@ function scrollBoxConstructor(opts){
  		dragX = dragConstructor();
  		dragY = dragConstructor();
 
- 		slideX = slideConstructor();
+ 		slideX = slideConstructor({name: 'slideX'});
  		slideY = slideConstructor();
 
  		x = 0;
@@ -182,8 +182,6 @@ function scrollBoxConstructor(opts){
  		}else{
  			idle();
  		}
-
- 		// console.log(x,y);
 
  		getContent()[0].style[prefix.js + 'Transform'] = "translate3d("+ x +"px,"+ y +"px, 0px)";
  	}
